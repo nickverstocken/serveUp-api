@@ -34,6 +34,7 @@ use Illuminate\Notifications\Notifiable;
  * @property \Illuminate\Database\Eloquent\Collection $has_categories
  * @property \Illuminate\Database\Eloquent\Collection $has_services
  * @property \Illuminate\Database\Eloquent\Collection $offers
+ * @property \Illuminate\Database\Eloquent\Collection $faqAnswers
  *
  * @package App\Models
  */
@@ -85,4 +86,8 @@ class Service extends Model
 	{
 		return $this->hasMany(\App\Offer::class);
 	}
+    public function faqAnswers()
+    {
+        return $this->hasMany(\App\FaqAnswer::class);
+    }
 }

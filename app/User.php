@@ -32,7 +32,7 @@ use Illuminate\Notifications\Notifiable;
  * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\City $city
- * @property \Illuminate\Database\Eloquent\Collection $has_services
+ * @property \Illuminate\Database\Eloquent\Collection $services
  * @property \Illuminate\Database\Eloquent\Collection $requests
  * @property \Illuminate\Database\Eloquent\Collection $reviews
  * @property \Illuminate\Database\Eloquent\Collection $user_verifications
@@ -74,9 +74,9 @@ class User extends Authenticatable implements JWTSubject
 		return $this->belongsTo(\App\City::class);
 	}
 
-	public function has_services()
+	public function services()
 	{
-		return $this->hasMany(\App\HasService::class);
+		return $this->hasMany(\App\Service::class);
 	}
 
 	public function requests()

@@ -192,7 +192,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function getAuthenticatedUser()
+    public function getAuthenticatedUser(Request $request)
     {
        $token = JWTAuth::getToken();
        $authenticated = JWTAuth::parseToken();
@@ -210,6 +210,7 @@ class AuthController extends Controller
         }
         $user = JWTAuth::parseToken()->toUser();
         $user = new Item($user, $this->userTransformer);
+        $this->fractal->parseIncludes($request->get('include', ''));
         $user = $this->fractal->createData($user);
         $user = $user->toArray();
         return ApiResponseHelper::success(['user' => $user]);

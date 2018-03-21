@@ -15,7 +15,7 @@ use League\Fractal\TransformerAbstract;
 class UserTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
-        'city'
+        'city', 'service'
     ];
     public function transform(User $user)
     {
@@ -44,5 +44,11 @@ class UserTransformer extends TransformerAbstract
             return null;
         }
         return $this->item($user->city, App::make(App\Http\Transformers\CityTransformer::class));
+    }
+    public function includeservice(User $user){
+        if(!$user->services){
+            return null;
+        }
+        return $this->collection($user->services, App::make(App\Http\Transformers\ServiceTransformer::class));
     }
 }

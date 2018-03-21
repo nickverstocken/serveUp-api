@@ -16,8 +16,22 @@ use Illuminate\Notifications\Notifiable;
  * @property int $id
  * @property string $name
  * @property string $description
+ * @property string $address
  * @property int $city_id
  * @property string $country
+ * @property string $tel
+ * @property int $experience
+ * @property string $website
+ * @property string $facebook
+ * @property string $youtube
+ * @property string $twitter
+ * @property string $linkedin
+ * @property string $google
+ * @property string $pinterest
+ * @property string $instagram
+ * @property string $snapchat
+ * @property string $dribble
+ * @property string $behance
  * @property string $logo
  * @property string $banner
  * @property string $business_hours
@@ -29,10 +43,10 @@ use Illuminate\Notifications\Notifiable;
  * @property string $standard_response
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * 
+ *
+ * @property \App\User $user
  * @property \App\City $city
  * @property \Illuminate\Database\Eloquent\Collection $has_categories
- * @property \Illuminate\Database\Eloquent\Collection $has_services
  * @property \Illuminate\Database\Eloquent\Collection $offers
  * @property \Illuminate\Database\Eloquent\Collection $faqAnswers
  *
@@ -54,8 +68,22 @@ class Service extends Model
 	protected $fillable = [
 		'name',
 		'description',
+        'address',
 		'city_id',
 		'country',
+        'tel',
+        'experience',
+        'website',
+        'facebook',
+        'youtube',
+        'twitter',
+        'linkedin',
+        'google',
+        'pinterest',
+        'instagram',
+        'snapchat',
+        'dribble',
+        'behance',
 		'logo',
 		'banner',
 		'business_hours',
@@ -71,17 +99,14 @@ class Service extends Model
 	{
 		return $this->belongsTo(\App\City::class);
 	}
-
+    public function user()
+    {
+        return $this->belongsTo(\App\User::class);
+    }
 	public function has_categories()
 	{
 		return $this->hasMany(\App\HasCategory::class);
 	}
-
-	public function has_services()
-	{
-		return $this->hasMany(\App\HasService::class);
-	}
-
 	public function offers()
 	{
 		return $this->hasMany(\App\Offer::class);

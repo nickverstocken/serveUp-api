@@ -29,7 +29,7 @@ class CreateUsersTable extends Migration
             $table->string('picture', 100)->nullable();
             $table->string('picture_thumb', 100)->nullable();
             $table->string('introduction', 300)->nullable();
-            $table->enum('role',['admin','user','business'])->default('user');
+            $table->enum('role',['admin','user','service'])->default('user');
             $table->boolean('is_verified')->default(0);
             $table->rememberToken();
             $table->softDeletes();

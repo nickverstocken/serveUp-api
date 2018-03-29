@@ -12,9 +12,10 @@ use Spatie\Fractalistic\ArraySerializer;
 use Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Response;
 use App\User;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use DB;
 use Hash;
 use Mail;
@@ -176,7 +177,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             $error_message = "Your email address was not found.";
-            return response()->json(['success' => false, 'error' => ['email' => $error_message]], 401);
+            return response()->json(['success' => false, 'error' => ['email' => $error_message]], 404);
         }
         try {
             Password::sendResetLink($request->only('email'), function (Message $message) {
@@ -194,19 +195,18 @@ class AuthController extends Controller
 
     public function getAuthenticatedUser(Request $request)
     {
-       $token = JWTAuth::getToken();
-       $authenticated = JWTAuth::parseToken();
+       //$token = JWTAuth::getToken();
         try {
             if (!$user = JWTAuth::parseToken()->authenticate()) {
 
                 return response()->json(['user_not_found'], 404);
             }
         } catch (TokenExpiredException $e) {
-            return response()->json(['token_expired'], 401);
+            return ApiResponseHelper::error('token_expired', 401);
         } catch (TokenInvalidException $e) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
+            return ApiResponseHelper::error('token_invalid', 401);
         } catch (JWTException $e) {
-            return response()->json(['token_absent'], $e->getStatusCode());
+            return ApiResponseHelper::error('token_absent', 401);
         }
         $user = JWTAuth::parseToken()->toUser();
         $user = new Item($user, $this->userTransformer);
@@ -225,9 +225,9 @@ class AuthController extends Controller
                 'token' => $newtoken
             ]);
         } catch (TokenInvalidException $e) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
+            return response()->json(['token_invalid'], 400);
         } catch (JWTException $e) {
-            return response()->json(['token_absent'], $e->getStatusCode());
+            return response()->json(['token_absent'], 400);
         }
     }
 }

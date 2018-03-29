@@ -21,7 +21,7 @@ class userSeeder extends Seeder
                 'password' => Hash::make('test123'),
                 'address' => 'Kruisstraat 60',
                 'city_id' => 207,
-                'role' => 'admin',
+                'role' => 'service',
                 'is_verified' => true
             ),
             array(
@@ -40,7 +40,7 @@ class userSeeder extends Seeder
                 'address' => 'Kruisstraat 60',
                 'password' => Hash::make('test123'),
                 'city_id' => 207,
-                'role' => 'business',
+                'role' => 'user',
                 'is_verified' => true
             ),
             array(
@@ -49,7 +49,7 @@ class userSeeder extends Seeder
                 'email' => 'simon@gmail.com',
                 'password' => Hash::make('test123'),
                 'city_id' => 1235,
-                'role' => 'business',
+                'role' => 'user',
                 'is_verified' => true
             ),
             array(
@@ -67,7 +67,7 @@ class userSeeder extends Seeder
                 'email' => 'ann@gmail.com',
                 'password' => Hash::make('test123'),
                 'city_id' => 139,
-                'role' => 'business',
+                'role' => 'user',
                 'is_verified' => true
             )
         );

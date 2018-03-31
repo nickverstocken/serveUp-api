@@ -100,9 +100,36 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
-        ],
+        'required' => 'The :attribute field is u moeder.',
+        'password.required'    => 'Wachtwoord is een verplicht veld.',
+        'password.confirmed'    => 'Het wachtwoord komt niet overeen met de bevestiging.',
+        'new_password.required'    => 'Het nieuwe wachtwoord is een verplicht veld.',
+        'new_password.confirmed'    => 'Het nieuwe wachtwoord komt niet overeen met de bevestiging.',
+        'password.min' => 'Het wachtwoord moet minstens :min tekens bevatten',
+        'new_password.min' => 'Het nieuwe wachtwoord moet minstens :min tekens bevatten',
+        'new_password_confirmation.min' => 'Wachtwoord bevestiging moet minstens :min tekens bevatten',
+        'firstname.required'    => 'Voornaam is een verplicht veld.',
+        'firstname.string'    => 'Voornaam in een correct formaat a.u.b.',
+        'firstname.max'    => 'Voornaam mag niet langer dan  karakters zijn.',
+        'lastname.required' => 'Achternaam is een verplicht veld.',
+        'lastname.string'    => 'Achternaam in een correct formaat a.u.b.',
+        'lastname.max'    => 'Voornaam mag niet langer dan  karakters zijn.',
+        'email.required'      => 'Email is een verplicht veld.',
+        'email.email'      => 'De ingevulde email is in een incorrect formaat.',
+        'email.max'    => 'Email mag niet langer dan 255 karakters zijn.',
+        'email.unique' => 'Email is al in gebruik.',
+        'title.required' => 'Titel is een verplicht veld',
+        'title.string'    => 'Voornaam in een correct formaat a.u.b.',
+        'title.max'    => 'Voornaam mag niet langer dan  karakters zijn.',
+        'author.required' => 'Auteur is een verplicht veld',
+        'author.string'    => 'Auteur in een correct formaat a.u.b.',
+        'author.max'    => 'Auteur mag niet langer dan  karakters zijn.',
+        'shortDescription.string'    => 'Auteur in een correct formaat a.u.b.',
+        'numberOfPages.numeric' => 'Pagina nummers mogen alleen numerieke karakter bevatten.',
+        'image' => 'Upload alleen afbeeldingen a.u.b.',
+        'code.numeric' => 'Code mag alleen numerieke karakters bevatten',
+        'dateOfBirth.date' => 'Geboortedatum moet een datum zijn',
+        'dateOfBirth.before' => 'Een kind kan niet in de toekomst geboren zijn...'
     ],
 
     /*

@@ -42,4 +42,7 @@ class Image extends Model
 		'path_thumb',
 		'mime_type'
 	];
+    public function service(){
+        return $this->morphedByMany('App\Service', 'image');
+    }
 }

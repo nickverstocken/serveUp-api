@@ -8,7 +8,7 @@
 
 namespace App\Helpers;
 use Response;
-
+use JWTAuth;
 class ApiResponseHelper
 {
     public static function success(array $data = [], $message = '', $responseCode = 200)

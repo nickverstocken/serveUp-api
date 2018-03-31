@@ -115,4 +115,7 @@ class Service extends Model
     {
         return $this->hasMany(\App\FaqAnswer::class);
     }
+    public function images(){
+        return $this->morphMany('App\Image', 'image' );
+    }
 }

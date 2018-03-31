@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Transformers\UserTransformer;
 use App\UserVerification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
+use App\Transformers\UserTransformer;
+use Namshi\JOSE\JWT;
 use Spatie\Fractalistic\ArraySerializer;
 use Validator;
 use JWTAuth;
@@ -61,11 +63,12 @@ class AuthController extends Controller
             if ($input['picture']) {
                 $file = $input['picture'];
                 $extension = $file->getClientOriginalExtension();
-                $name = $user->id . '_' . $user->fname . $user->name;
+
+                $name = $user->id;
                 $path = ImageUpload::saveImage($input['picture'], 500, 500, 'profile', $extension, $name . '/avatar');
-                $user->picture = $path;
+                $user->picture = $path . '?' . Carbon::now()->timestamp;
                 $path = ImageUpload::saveImage($input['picture'], 100, 100, 'profile_thumb', $extension, $name . '/avatar');
-                $user->picture_thumb = $path;
+                $user->picture_thumb = $path . '?' . Carbon::now()->timestamp;
                 $user->save();
             }
             $verification_code = str_random(30); //Generate verification code
@@ -93,14 +96,23 @@ class AuthController extends Controller
         Return ApiResponseHelper::success([], 'Mail successfully send!');
     }
     public function checkEmail(Request $request){
-        $rules = [
-            'email' => 'required|email|max:255|unique:users',
-        ];
+        try{
+            $user = JWTAuth::parseToken()->toUser();
+            $rules = [
+                'email' => 'required|email|max:255|unique:users,email,'. $user->id,
+            ];
+
+        }catch(\Exception $ex){
+            $rules = [
+                'email' => 'required|email|max:255|unique:users',
+            ];
+        }
+
         $input = $request->only('email');
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return ApiResponseHelper::error($error, 409);
+            return ApiResponseHelper::error($error, 200);
         }else{
             return ApiResponseHelper::success([], 'Email ok');
         }

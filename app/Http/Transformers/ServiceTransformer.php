@@ -22,13 +22,12 @@ class ServiceTransformer extends TransformerAbstract
 
         return [
             'id' => $service->id,
+            'user_id' => $service->user_id,
             'name' => trim($service->name),
             'description' => trim($service->description),
             'city_id' => $service->city_id,
             'address' => trim($service->address),
-            'zip' => trim($service->city->zip),
-            'city' => trim($service->city->name),
-            'province' => trim($service->city->province),
+            'city' => $service->city,
             'country' => trim($service->country),
             'tel' => trim($service->tel),
             'experience' => $service->experience,

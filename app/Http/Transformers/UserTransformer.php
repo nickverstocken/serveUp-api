@@ -35,6 +35,7 @@ class UserTransformer extends TransformerAbstract
             'picture' => trim($user->picture),
             'picture_thumb' => trim($user->picture_thumb),
             'creation_date' => $user->created_at->toDateTimeString(),
+            'updated_at' => $user->updated_at->toDateTimeString(),
             'role' => $user->role
         ];
     }

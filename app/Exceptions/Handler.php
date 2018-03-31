@@ -61,6 +61,7 @@ class Handler extends ExceptionHandler
                 case TokenBlacklistedException::class:
                     return ApiResponseHelper::error('Token Invalid', $exception->getStatusCode());
                 default:
+                    return ApiResponseHelper::error($exception->getMessage(), $exception->getStatusCode());
                     break;
             }
         }

@@ -29,10 +29,16 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function(){
 });
 Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function() {
     //auth
-    Route::get('test', 'AuthController@test');
     Route::post('logout', 'AuthController@logout');
 
     //categories
-    Route::get('login/user', 'AuthController@getAuthenticatedUser');
     Route::get('categories', 'CategoryController@index');
+
+    //user
+    Route::get('login/user', 'AuthController@getAuthenticatedUser');
+    Route::post('user/update', 'UserController@update');
+    Route::post('user/changepassword', 'UserController@updatePassword');
+
+    //service
+    Route::post('service/update/{serviceId}', 'ServiceController@update');
 });

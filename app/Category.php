@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * 
- * @property \Illuminate\Database\Eloquent\Collection $has_categories
+ * @property \Illuminate\Database\Eloquent\Collection $services
  *
  * @package App
  */
@@ -31,8 +31,8 @@ class Category extends Model
         'picturePath'
 	];
 
-	public function has_categories()
+	public function services()
 	{
-		return $this->hasMany(\App\HasCategory::class);
+		return $this->hasMany(\App\Service::class);
 	}
 }

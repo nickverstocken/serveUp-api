@@ -25,6 +25,8 @@ class ServiceTransformer extends TransformerAbstract
             'user_id' => $service->user_id,
             'name' => trim($service->name),
             'description' => trim($service->description),
+            'category_id' => $service->category_id,
+            'category' => $service->category,
             'city_id' => $service->city_id,
             'address' => trim($service->address),
             'city' => $service->city,
@@ -32,15 +34,7 @@ class ServiceTransformer extends TransformerAbstract
             'tel' => trim($service->tel),
             'experience' => $service->experience,
             'website' => trim($service->website),
-            'facebook' => trim($service->facebook),
-            'twitter' => trim($service->twitter),
-            'linkedin' => trim($service->linkedin),
-            'google' => trim($service->google),
-            'pinterest' => trim($service->pinterest),
-            'instagram' => trim($service->instagram),
-            'snapchat' => trim($service->snapchat),
-            'dribble' => trim($service->dribble),
-            'behance' => trim($service->behance),
+            'social_networks' => trim($service->social_networks),
             'logo' => trim($service->logo),
             'banner' => trim($service->banner),
             'business_hours' => $service->business_hours,
@@ -50,7 +44,8 @@ class ServiceTransformer extends TransformerAbstract
             'rate' => $service->rate,
             'price_extras' => $service->price_extras,
             'standard_response' => trim($service->standard_response),
-            'creation_date' => $service->created_at->toDateTimeString()
+            'creation_date' => $service->created_at->toDateTimeString(),
+            'tags' => $service->tags
         ];
     }
     public function includefaq(Service $service)

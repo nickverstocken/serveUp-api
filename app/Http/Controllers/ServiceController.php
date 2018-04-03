@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Tag;
 use App\Service;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponseHelper;
@@ -13,6 +14,7 @@ use League\Fractal\Manager;
 use App\Http\Transformers\ServiceTransformer;
 use League\Fractal\Resource\Item;
 use Carbon\Carbon;
+
 class ServiceController extends Controller
 {
     private $fractal;
@@ -25,13 +27,14 @@ class ServiceController extends Controller
         $this->fractal->setSerializer(new ArraySerializer());
     }
 
-    public function update(Request $request, $serviceId){
+    public function update(Request $request, $serviceId)
+    {
         $service = Service::find($serviceId);
         $user = JWTAuth::parseToken()->toUser();
-        if(!$service){
+        if (!$service) {
             return ApiResponseHelper::error('service bestaat niet', 404);
         }
-        if($service->user_id != $user->id){
+        if ($service->user_id != $user->id) {
             return ApiResponseHelper::error('service hoort niet bij jou');
         }
         $input = $request->all();
@@ -49,6 +52,7 @@ class ServiceController extends Controller
         if ($validator->fails()) {
             return ApiResponseHelper::error($validator->messages(), 422);
         }
+
         if ($request->hasFile('logo')) {
             $file = $input['logo'];
             $extension = $file->getClientOriginalExtension();
@@ -58,10 +62,24 @@ class ServiceController extends Controller
         } else {
             $input['logo'] = $service->logo;
         }
+
+        if ($request->has('tags')) {
+            $tags = $request->json()->get('tags');
+            foreach ($tags as $tag) {
+                $this->saveTags($tag['name'], $service);
+            }
+        }
         $service->update($input);
         $service = new Item($service, $this->serviceTransformer);
         $service = $this->fractal->createData($service);
         $service = $service->toArray();
         return ApiResponseHelper::success(['service' => $service], 'service update success');
+    }
+
+    public function saveTags($name, $service)
+    {
+        $tag = new Tag(['name' => $name]);
+        $tag->save();
+        $tag->services()->save($service);
     }
 }

@@ -20,11 +20,9 @@ class serviceSeeder extends Seeder
                 'description' => 'Uitmunten als bedrijf door grondige vakkennis te koppelen aan klantgerichte dienstverlening. Deze basisgedachte wordt door SCS reeds meer dan 20 jaar toegepast en heeft ervoor gezorgd dat wij in een brede regio rond Sint-Niklaas langzaam maar zeker zijn uitgegroeid tot een begrip op gebied van schoonmaak: een KMO met oplossingen op maat voor KMO\'s.',
                 'address' => 'Passtraat 71',
                 'city_id' => 2234,
-                'business_hours' => json_decode('[{"maandag":"09:00-17:00"}, {"dinsdag":"09:00-17:00"}, {"woensdag":"09:00-17:00"}, {"donderdag":"09:00-17:00"}, {"vrijdag":"09:00-17:00"}, {"zaterdag":""}, {"zondag":""}]'),
                 'max_km' => 80,
                 'price_estimate' => 35,
-                'rate' => 'uur',
-                'price_extras' => json_decode('[{"ramen":"15"},{"plafond":"15"}]')
+                'rate' => 'uur'
             ),
             array(
                 'user_id' => 2,

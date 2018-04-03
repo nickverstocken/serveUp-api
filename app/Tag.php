@@ -30,4 +30,8 @@ class Tag extends Model
 	{
 		return $this->hasOne(\App\Taggable::class);
 	}
+    public function services()
+    {
+        return $this->morphedByMany('App\Service', 'taggable');
+    }
 }

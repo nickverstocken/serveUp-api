@@ -16,22 +16,14 @@ use Illuminate\Notifications\Notifiable;
  * @property int $id
  * @property string $name
  * @property string $description
+ * @property int $category_id
  * @property string $address
  * @property int $city_id
  * @property string $country
  * @property string $tel
  * @property int $experience
  * @property string $website
- * @property string $facebook
- * @property string $youtube
- * @property string $twitter
- * @property string $linkedin
- * @property string $google
- * @property string $pinterest
- * @property string $instagram
- * @property string $snapchat
- * @property string $dribble
- * @property string $behance
+ * @property string $social_networks
  * @property string $logo
  * @property string $banner
  * @property string $business_hours
@@ -46,7 +38,7 @@ use Illuminate\Notifications\Notifiable;
  *
  * @property \App\User $user
  * @property \App\City $city
- * @property \Illuminate\Database\Eloquent\Collection $has_categories
+ * @property \App\Category $category
  * @property \Illuminate\Database\Eloquent\Collection $offers
  * @property \Illuminate\Database\Eloquent\Collection $faqAnswers
  *
@@ -62,28 +54,21 @@ class Service extends Model
 		'max_km' => 'int',
 		'price_estimate' => 'float',
         'business_hours' => 'array',
-        'price_extras' => 'array'
+        'price_extras' => 'array',
+        'social_networks' => 'array'
 	];
 
 	protected $fillable = [
 		'name',
 		'description',
+        'category_id',
         'address',
 		'city_id',
 		'country',
         'tel',
         'experience',
         'website',
-        'facebook',
-        'youtube',
-        'twitter',
-        'linkedin',
-        'google',
-        'pinterest',
-        'instagram',
-        'snapchat',
-        'dribble',
-        'behance',
+        'social_networks',
 		'logo',
 		'banner',
 		'business_hours',
@@ -103,9 +88,9 @@ class Service extends Model
     {
         return $this->belongsTo(\App\User::class);
     }
-	public function has_categories()
+	public function category()
 	{
-		return $this->hasMany(\App\HasCategory::class);
+		return $this->belongsTo(\App\Category::class);
 	}
 	public function offers()
 	{
@@ -117,5 +102,8 @@ class Service extends Model
     }
     public function images(){
         return $this->morphMany('App\Image', 'image' );
+    }
+    public function tags(){
+        return $this->morphToMany('App\Tag', 'taggable');
     }
 }

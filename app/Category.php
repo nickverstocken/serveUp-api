@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $updated_at
  * 
  * @property \Illuminate\Database\Eloquent\Collection $services
+ * @property \Illuminate\Database\Eloquent\Collection $subcategories
  *
  * @package App
  */
@@ -35,4 +36,8 @@ class Category extends Model
 	{
 		return $this->hasMany(\App\Service::class);
 	}
+	public function subcategories()
+    {
+        return $this->hasMany(\App\SubCategory::class);
+    }
 }

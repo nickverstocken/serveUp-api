@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Tag;
 use App\Service;
+use App\Taggable;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponseHelper;
 use App\Http\Helpers\ImageUpload;
@@ -26,7 +27,9 @@ class ServiceController extends Controller
         $this->serviceTransformer = $serviceTransformer;
         $this->fractal->setSerializer(new ArraySerializer());
     }
+    public function index(Request $request){
 
+    }
     public function update(Request $request, $serviceId)
     {
         $service = Service::find($serviceId);
@@ -78,8 +81,36 @@ class ServiceController extends Controller
 
     public function saveTags($name, $service)
     {
-        $tag = new Tag(['name' => $name]);
-        $tag->save();
-        $tag->services()->save($service);
+        $tagFind = Tag::where('name', $name)->get()->first();
+        if(!$tagFind){
+            $tag = new Tag(['name' => $name]);
+            $tag->save();
+            $tag->services()->save($service);
+        }else{
+            if(!$service->tags()->where('id', $tagFind->id)->exists()){
+                $tag = $tagFind;
+                $tag->services()->save($service);
+            }
+        }
+    }
+    public function removeTagFromService(Request $request, $serviceId, $tagName){
+        $service = Service::find($serviceId);
+        $tagId = Tag::where('name', $tagName)->first();
+        if($tagId){
+            $tagId = $tagId->id;
+        }else{
+            return ApiResponseHelper::error('Tag bestaat niet', 404);
+        }
+        $user = JWTAuth::parseToken()->toUser();
+        //->photos()->where('id', '=', 1)->delete();
+        if (!$service) {
+            return ApiResponseHelper::error('service bestaat niet', 404);
+        }
+        if ($service->user_id != $user->id) {
+            return ApiResponseHelper::error('service hoort niet bij jou');
+        }
+        $taggable = Taggable::where('taggable_type', 'App\Service')->where('taggable_id', $serviceId)->where('tag_id', $tagId);
+        $taggable->delete();
+        return ApiResponseHelper::success([], 'Tag succesvol verwijderd!');
     }
 }

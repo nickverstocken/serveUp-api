@@ -39,7 +39,7 @@ class categorySeeder extends Seeder
                 'picturePath' => 'default_images/categories/hobby.jpg'
             ),
             array(
-                'name' => 'Web/Design',
+                'name' => 'Multimedia',
                 'picturePath' => 'default_images/categories/webdesign.jpg'
             ),
             array(

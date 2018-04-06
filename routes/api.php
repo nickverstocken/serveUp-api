@@ -33,7 +33,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //categories
     Route::get('categories', 'CategoryController@index');
-
+    Route::get('subcategories', 'CategoryController@getSubCategories');
     //user
     Route::get('login/user', 'AuthController@getAuthenticatedUser');
     Route::post('user/update', 'UserController@update');
@@ -41,4 +41,5 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //service
     Route::post('service/update/{serviceId}', 'ServiceController@update');
+    Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
 });

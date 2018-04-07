@@ -24,6 +24,7 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function(){
 
     Route::post('recover', 'AuthController@recover');
     Route::get('city', 'CityController@search');
+    Route::get('city/update', 'CityController@updateCities');
     Route::post('checkEmail', 'AuthController@checkEmail');
     Route::post('sendMail', 'AuthController@sendVerificationMail');
 });
@@ -33,7 +34,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //categories
     Route::get('categories', 'CategoryController@index');
-    Route::get('subcategories', 'CategoryController@getSubCategories');
+    Route::get('subcategories',['middleware' => 'throttle:1,0', 'uses' => 'CategoryController@getSubCategories']);
+    Route::get('subcategory/{id}', 'CategoryController@getSubCategory');
     //user
     Route::get('login/user', 'AuthController@getAuthenticatedUser');
     Route::post('user/update', 'UserController@update');

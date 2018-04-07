@@ -17,7 +17,10 @@ class CreateCityTable extends Migration
             $table->increments('id');
             $table->string('name', 200);
             $table->integer('zip');
-            $table->string('province', 200);
+            $table->string('province', 200)->nullable();
+            $table->double('lat')->nullable();
+            $table->double('lng')->nullable();
+            $table->string('mapsurl')->nullable();
         });
     }
 

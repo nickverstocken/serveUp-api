@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Http\Transformers\SubCategoryTransformer;
+use App\SubCategory;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponseHelper;
 use App\Http\Transformers\CategoryTranformer;
@@ -16,10 +18,12 @@ class CategoryController extends Controller
 {
     private $fractal;
     private $categoryTransformer;
-    function __construct(Manager $fractal, CategoryTranformer $categoryTransformer)
+    private $subcategoryTransformer;
+    function __construct(Manager $fractal, CategoryTranformer $categoryTransformer, SubCategoryTransformer $subCategoryTransformer)
     {
         $this->fractal = $fractal;
         $this->categoryTransformer = $categoryTransformer;
+        $this->subcategoryTransformer = $subCategoryTransformer;
         $this->fractal->setSerializer(new ArraySerializer());
     }
     public function index(){
@@ -32,7 +36,22 @@ class CategoryController extends Controller
     public function getSubCategories(Request $request){
         $search_term = $request->input('search');
         $limit = $request->input('limit', 5);
-        $subcats = Searchy::sub_categories('name')->query($search_term)->get();
+        $query = SubCategory::hydrate(Searchy::sub_categories('name')->query($search_term)->getQuery()->limit($limit)->get()->toArray());
+        $subcats = new Collection($query, $this->subcategoryTransformer);
+        $this->fractal->parseIncludes(['category']);
+        $subcats = $this->fractal->createData($subcats);
+        $subcats = $subcats->toArray();
         return ApiResponseHelper::success(['subcategories' => $subcats]);
+    }
+    public function getSubCategory(Request $request, $id){
+        $query = SubCategory::find($id);
+        if(!$query){
+            return ApiResponseHelper::error('Subcategory does not exist', 404);
+        }
+        $subcat = new Item($query, $this->subcategoryTransformer);
+        $this->fractal->parseIncludes(['category']);
+        $subcat = $this->fractal->createData($subcat);
+        $subcat = $subcat->toArray();
+        return ApiResponseHelper::success(['subcategory' => $subcat]);
     }
 }

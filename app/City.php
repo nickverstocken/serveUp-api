@@ -14,8 +14,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name
  * @property int $zip
+ * @property double $lat
+ * @property double $lng
  * @property string $province
- * 
+ * @property string $mapsurl
  * @property \Illuminate\Database\Eloquent\Collection $services
  * @property \Illuminate\Database\Eloquent\Collection $users
  *
@@ -34,7 +36,10 @@ class City extends Model
 	protected $fillable = [
 		'name',
 		'zip',
-		'province'
+		'province',
+        'lat',
+        'lng',
+        'mapsurl'
 	];
 
 	public function services()

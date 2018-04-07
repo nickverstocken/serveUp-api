@@ -16,51 +16,51 @@ class categorySeeder extends Seeder
         $categories = array(
             array(
                 'name' => 'Thuis',
-                'picturePath' => 'default_images/categories/home.jpg'
+                'picturePath' => 'default_images/categories/home'
             ),
             array(
                 'name' => 'Evenementen',
-                'picturePath' => 'default_images/categories/event.jpg'
+                'picturePath' => 'default_images/categories/event'
             ),
             array(
                 'name' => 'Lessen',
-                'picturePath' => 'default_images/categories/lesson.jpg'
+                'picturePath' => 'default_images/categories/lesson'
             ),
             array(
                 'name' => 'Wellness',
-                'picturePath' => 'default_images/categories/wellness.jpg'
+                'picturePath' => 'default_images/categories/wellness'
             ),
             array(
                 'name' => 'Zakelijk',
-                'picturePath' => 'default_images/categories/business.jpg'
+                'picturePath' => 'default_images/categories/business'
             ),
             array(
                 'name' => 'Hobby',
-                'picturePath' => 'default_images/categories/hobby.jpg'
+                'picturePath' => 'default_images/categories/hobby'
             ),
             array(
                 'name' => 'Multimedia',
-                'picturePath' => 'default_images/categories/webdesign.jpg'
+                'picturePath' => 'default_images/categories/webdesign'
             ),
             array(
                 'name' => 'Wettelijk',
-                'picturePath' => 'default_images/categories/legal.jpg'
+                'picturePath' => 'default_images/categories/legal'
             ),
             array(
                 'name' => 'Huisdieren',
-                'picturePath' => 'default_images/categories/pet.jpg'
+                'picturePath' => 'default_images/categories/pet'
             ),
             array(
                 'name' => 'Fotografie',
-                'picturePath' => 'default_images/categories/photography.jpg'
+                'picturePath' => 'default_images/categories/photography'
             ),
             array(
                 'name' => 'Technisch',
-                'picturePath' => 'default_images/categories/techrepair.jpg'
+                'picturePath' => 'default_images/categories/techrepair'
             ),
             array(
                 'name' => 'Persoonlijk',
-                'picturePath' => 'default_images/categories/personal.jpg'
+                'picturePath' => 'default_images/categories/personal'
             )
         );
         foreach ($categories as $category) {

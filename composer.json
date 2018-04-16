@@ -13,8 +13,9 @@
         "laravel/tinker": "~1.0",
         "reliese/laravel": "^0.0.13",
         "spatie/laravel-fractal": "^5.3",
+        "tom-lingham/searchy": "2.*",
         "tymon/jwt-auth": "dev-develop",
-        "tom-lingham/searchy" : "2.*"
+        "willdurand/geocoder": "^4.2"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

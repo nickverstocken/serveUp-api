@@ -20,7 +20,7 @@ class userSeeder extends Seeder
                 'email' => 'nick@gmail.com',
                 'password' => Hash::make('test123'),
                 'address' => 'Kruisstraat 60',
-                'city_id' => 207,
+                'city_id' => 2655,
                 'role' => 'service',
                 'is_verified' => true
             ),
@@ -29,7 +29,7 @@ class userSeeder extends Seeder
                 'name' => 'Van Poecke',
                 'email' => 'bart@gmail.com',
                 'password' => Hash::make('test123'),
-                'city_id' => 2174,
+                'city_id' => 2655,
                 'role' => 'user',
                 'is_verified' => true
             ),
@@ -39,7 +39,7 @@ class userSeeder extends Seeder
                 'email' => 'eveline@gmail.com',
                 'address' => 'Kruisstraat 60',
                 'password' => Hash::make('test123'),
-                'city_id' => 207,
+                'city_id' => 2655,
                 'role' => 'user',
                 'is_verified' => true
             ),
@@ -48,7 +48,7 @@ class userSeeder extends Seeder
                 'name' => 'Cerfontaine',
                 'email' => 'simon@gmail.com',
                 'password' => Hash::make('test123'),
-                'city_id' => 1235,
+                'city_id' => 2655,
                 'role' => 'user',
                 'is_verified' => true
             ),
@@ -57,7 +57,7 @@ class userSeeder extends Seeder
                 'name' => 'Van Cleuvenbergen',
                 'email' => 'jens@gmail.com',
                 'password' => Hash::make('test123'),
-                'city_id' => 1235,
+                'city_id' => 2655,
                 'role' => 'user',
                 'is_verified' => true
             ),
@@ -66,7 +66,7 @@ class userSeeder extends Seeder
                 'name' => 'Van Der Linden',
                 'email' => 'ann@gmail.com',
                 'password' => Hash::make('test123'),
-                'city_id' => 139,
+                'city_id' => 2655,
                 'role' => 'user',
                 'is_verified' => true
             )

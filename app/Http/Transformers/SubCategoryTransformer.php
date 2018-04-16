@@ -21,6 +21,7 @@ class SubCategoryTransformer extends TransformerAbstract
         return [
             'id' => $subcat->id,
             'name' => trim($subcat->name),
+            'plural' => $subcat->plural,
             'description' => trim($subcat->description),
             'created_at' => $subcat->created_at->toDateTimeString(),
             'updated_at' => $subcat->updated_at->toDateTimeString()

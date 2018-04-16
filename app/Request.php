@@ -16,13 +16,14 @@ use Illuminate\Notifications\Notifiable;
  * @property int $id
  * @property string $title
  * @property int $user_id
+ * @property int $city_id
  * @property string $description
  * @property \Carbon\Carbon $due_date
- * @property float $budget
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * 
  * @property \App\User $user
+ * @property \App\City $city
  * @property \Illuminate\Database\Eloquent\Collection $offers
  *
  * @package App\Models
@@ -34,11 +35,7 @@ class Request extends Model
     protected $dates = ['deleted_at'];
 	protected $casts = [
 		'user_id' => 'int',
-		'budget' => 'float'
-	];
-
-	protected $dates = [
-		'due_date'
+        'city_id' => 'int',
 	];
 
 	protected $fillable = [
@@ -46,7 +43,7 @@ class Request extends Model
 		'user_id',
 		'description',
 		'due_date',
-		'budget'
+        'city_id'
 	];
 
 	public function user()
@@ -58,4 +55,8 @@ class Request extends Model
 	{
 		return $this->hasMany(\App\Offer::class);
 	}
+    public function city()
+    {
+        return $this->belongsTo(\App\City::class);
+    }
 }

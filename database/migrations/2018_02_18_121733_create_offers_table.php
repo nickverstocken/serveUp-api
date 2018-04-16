@@ -16,8 +16,8 @@ class CreateOffersTable extends Migration
         Schema::create('offers', function (Blueprint $table) {
             $table->increments('id');
             $table->boolean('accepted')->default(0);
-            $table->double('price_offer', 12, 2);
-            $table->string('rate');
+            $table->double('price_offer', 12, 2)->nullable();
+            $table->string('rate')->nullable();
             $table->integer('request_id')->unsigned();
             $table->foreign('request_id')
                 ->references('id')->on('requests')
@@ -28,8 +28,8 @@ class CreateOffersTable extends Migration
                 ->references('id')->on('services')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

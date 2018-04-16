@@ -21,6 +21,7 @@ class CreateSubCategoriesTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->string('name', 100);
+            $table->string('plural');
             $table->string('description', 300)->nullable();
             $table->timestamps();
         });

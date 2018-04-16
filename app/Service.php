@@ -39,6 +39,7 @@ use Illuminate\Notifications\Notifiable;
  * @property \App\User $user
  * @property \App\City $city
  * @property \App\Category $category
+ * @property \App\Category $subcategory
  * @property \Illuminate\Database\Eloquent\Collection $offers
  * @property \Illuminate\Database\Eloquent\Collection $faqAnswers
  *
@@ -54,6 +55,7 @@ class Service extends Model
 		'max_km' => 'int',
 		'price_estimate' => 'float',
         'business_hours' => 'array',
+        'areas_of_service' => 'array',
         'price_extras' => 'array',
         'social_networks' => 'array'
 	];
@@ -92,6 +94,10 @@ class Service extends Model
 	{
 		return $this->belongsTo(\App\Category::class);
 	}
+    public function subcategory()
+    {
+        return $this->belongsTo(\App\SubCategory::class);
+    }
 	public function offers()
 	{
 		return $this->hasMany(\App\Offer::class);

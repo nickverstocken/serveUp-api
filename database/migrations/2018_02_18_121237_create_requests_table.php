@@ -23,8 +23,13 @@ class CreateRequestsTable extends Migration
                 ->onUpdate('cascade');
             $table->text('description');
             $table->date('due_date');
-            $table->double('budget', 12, 2);
+            $table->integer('city_id')->unsigned();
+            $table->foreign('city_id')
+                ->references('id')->on('city')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

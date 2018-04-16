@@ -42,6 +42,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::post('user/changepassword', 'UserController@updatePassword');
 
     //service
+    Route::get('service/{subcatId}/nearby/{name}/count', 'ServiceController@getServicesCountNearby');
     Route::post('service/update/{serviceId}', 'ServiceController@update');
     Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
+
+    //request
+    Route::get('request/all', 'RequestController@index');
+    Route::post('request/save', 'RequestController@save');
+
 });

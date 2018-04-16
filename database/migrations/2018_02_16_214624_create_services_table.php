@@ -27,6 +27,11 @@ class CreateServicesTable extends Migration
                 ->references('id')->on('categories')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->integer('subcategory_id')->unsigned()->nullable();
+            $table->foreign('subcategory_id')
+                ->references('id')->on('sub_categories')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('address');
             $table->integer('city_id')->unsigned();
             $table->foreign('city_id')
@@ -41,7 +46,7 @@ class CreateServicesTable extends Migration
             $table->string('logo', 100)->nullable();
             $table->string('banner', 100)->nullable();
             $table->string('business_hours', 300)->nullable();
-            $table->string('areas_of_service', 300)->nullable();
+            $table->text('areas_of_service')->nullable();
             $table->integer('max_km')->nullable();
             $table->double('price_estimate', 12, 2);
             $table->string('rate');

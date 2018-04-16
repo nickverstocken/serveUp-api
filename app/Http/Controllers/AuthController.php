@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use App\Transformers\UserTransformer;
-use Namshi\JOSE\JWT;
 use Spatie\Fractalistic\ArraySerializer;
 use Validator;
 use JWTAuth;

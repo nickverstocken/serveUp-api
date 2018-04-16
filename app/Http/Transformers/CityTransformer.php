@@ -20,7 +20,9 @@ class CityTransformer extends TransformerAbstract
             'id' => $city->id,
             'name' => $city->name,
             'zip' => $city->zip,
-            'province' => $city->province
+            'province' => $city->province,
+            'lat' => $city->lat,
+            'lng' => $city->lng
         ];
     }
 }

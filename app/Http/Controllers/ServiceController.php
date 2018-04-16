@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\FunctionsHelper;
+use App\SubCategory;
+use DB;
 use App\Tag;
 use App\Service;
 use App\Taggable;
+use App\City;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponseHelper;
 use App\Http\Helpers\ImageUpload;
@@ -27,9 +31,12 @@ class ServiceController extends Controller
         $this->serviceTransformer = $serviceTransformer;
         $this->fractal->setSerializer(new ArraySerializer());
     }
-    public function index(Request $request){
+
+    public function index(Request $request)
+    {
 
     }
+
     public function update(Request $request, $serviceId)
     {
         $service = Service::find($serviceId);
@@ -65,7 +72,12 @@ class ServiceController extends Controller
         } else {
             $input['logo'] = $service->logo;
         }
+        if ($request->has('max_km')) {
+            if ($service->max_km != $request->get('max_km')) {
 
+               $service->areas_of_service = self::getCitiesWithinRadius($service->city->zip, $service->city->name, $request->get('max_km'));
+            }
+        }
         if ($request->has('tags')) {
             $tags = $request->json()->get('tags');
             foreach ($tags as $tag) {
@@ -82,23 +94,25 @@ class ServiceController extends Controller
     public function saveTags($name, $service)
     {
         $tagFind = Tag::where('name', $name)->get()->first();
-        if(!$tagFind){
+        if (!$tagFind) {
             $tag = new Tag(['name' => $name]);
             $tag->save();
             $tag->services()->save($service);
-        }else{
-            if(!$service->tags()->where('id', $tagFind->id)->exists()){
+        } else {
+            if (!$service->tags()->where('id', $tagFind->id)->exists()) {
                 $tag = $tagFind;
                 $tag->services()->save($service);
             }
         }
     }
-    public function removeTagFromService(Request $request, $serviceId, $tagName){
+
+    public function removeTagFromService($serviceId, $tagName)
+    {
         $service = Service::find($serviceId);
         $tagId = Tag::where('name', $tagName)->first();
-        if($tagId){
+        if ($tagId) {
             $tagId = $tagId->id;
-        }else{
+        } else {
             return ApiResponseHelper::error('Tag bestaat niet', 404);
         }
         $user = JWTAuth::parseToken()->toUser();
@@ -112,5 +126,35 @@ class ServiceController extends Controller
         $taggable = Taggable::where('taggable_type', 'App\Service')->where('taggable_id', $serviceId)->where('tag_id', $tagId);
         $taggable->delete();
         return ApiResponseHelper::success([], 'Tag succesvol verwijderd!');
+    }
+
+    public function getCitiesWithinRadius($zip, $name, $radius = 5)
+    {
+        $city = City::where('zip', $zip)->where('name', 'like', $name . '%')->first();
+        $zips = [];
+        if ($city) {
+/*            $sql = 'SELECT *, (6371* ACOS(
+                    COS(RADIANS(' . $city->lat . '))
+                    * COS( RADIANS(lat))
+                    * COS( RADIANS(' . $city->lng . ')
+                    - RADIANS(lng))
+                    + SIN( RADIANS(' . $city->lat . '))
+                    * SIN( RADIANS(lat))))
+                    AS distance FROM city HAVING distance<=' . $radius . ' AND distance > 0';
+            $result = DB::select($sql);*/
+            $allcities = City::all();
+
+            foreach ($allcities as $citydb) {
+                if ((FunctionsHelper::vincentyGreatCircleDistance($city->lat, $city->lng, $citydb->lat, $citydb->lng) / 1000) <= $radius) {
+                    $citydb->distance = FunctionsHelper::vincentyGreatCircleDistance($city->lat, $city->lng, $citydb->lat, $citydb->lng) / 1000;
+                    $zips[] = [$citydb->zip => $citydb->name];
+                }
+            }
+        }
+        return $zips;
+    }
+    public function getServicesCountNearby(Request $request, $subcatId, $name){
+       $services = SubCategory::find($subcatId)->services()->where('areas_of_service', 'like', '%' . $name . '%')->select('id')->get();
+       Return ApiResponseHelper::success(['ids' => $services, 'count' => $services->count()]);
     }
 }

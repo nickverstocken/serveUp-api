@@ -33,18 +33,27 @@ class CityController extends Controller
         return ApiResponseHelper::success(['city' => $city]);
     }
     public function updateCities(){
-        $file = public_path() . '/data/cities.json';
-        $json = File::get($file);
-        $data = json_decode($json, true);
-        foreach ($data as $obj) {
-            $zip = $obj['zip'];
-            $city = City::where('zip', $zip)->where(DB::raw('TRIM(name)'), trim($obj['name']))->first();
-            if(!$city){
-               City::create($obj);
+        $cities = City::all();
+        foreach($cities as $city){
+           // dd($city->zip);
+            $url = urldecode("https://maps.googleapis.com/maps/api/geocode/json?address=". $city->zip ."," . $city->name . ",België&key=AIzaSyAoSQ1d_q1zShvfks5KP5UQ5cWsj7muOwU&language=nl");
+            dd($url);
+            $file = file_get_contents($url);
+
+            $data = json_decode($file, true);
+
+           // $province = $data['results'][0]['address_components'][2]['long_name'];
+            if(isset($data['results'][0])){
+                $lat = $data['results'][0]['geometry']['location']['lat'];
+                $lng =  $data['results'][0]['geometry']['location']['lng'];
+                var_dump($lat);
+                var_dump($lng);
             }else{
-                $city->update($obj);
+                var_dump('error for ' . $city->name  . ', ' . $city->zip);
             }
+
+           // var_dump($province);
         }
-        dd(City::all()->toArray());
+
     }
 }

@@ -45,7 +45,16 @@ class Request extends Model
 		'due_date',
         'city_id'
 	];
+    protected static function boot()
+    {
+        parent::boot();
 
+        static::deleting(function($requests) {
+            foreach ($requests->offers()->get() as $offer) {
+                $offer->delete();
+            }
+        });
+    }
 	public function user()
 	{
 		return $this->belongsTo(\App\User::class);

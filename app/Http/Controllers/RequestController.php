@@ -21,6 +21,22 @@ class RequestController extends Controller
         }])->get();
         return ApiResponseHelper::success(['requests' => $requests]);
     }
+    public function get(Request $request, $id) {
+        $user = JWTAuth::parseToken()->toUser();
+        $req = $user->requests()->with(['offers' => function($q) {
+            $q->with(['service' => function($query){
+                $query->select('name', 'id', 'logo', 'price_estimate', 'rate')->get();
+            }])->get();
+        }])->where('id', $id)->first();
+        if (!$req) {
+            return ApiResponseHelper::error('request bestaat niet', 404);
+        }
+        if ($req->user_id != $user->id) {
+            return ApiResponseHelper::error('request hoort niet bij jou', 404);
+        }
+
+        return ApiResponseHelper::success(['request' => $req]);
+    }
     public function save(Request $request){
         $user = JWTAuth::parseToken()->toUser();
         $input = $request->all();
@@ -67,7 +83,7 @@ class RequestController extends Controller
             return ApiResponseHelper::error('request bestaat niet', 404);
         }
         if ($req->user_id != $user->id) {
-            return ApiResponseHelper::error('request hoort niet bij jou');
+            return ApiResponseHelper::error('request hoort niet bij jou', 404);
         }
         try{
             $req->update($input);
@@ -84,7 +100,7 @@ class RequestController extends Controller
             return ApiResponseHelper::error('request bestaat niet', 404);
         }
         if ($req->user_id != $user->id) {
-            return ApiResponseHelper::error('request hoort niet bij jou');
+            return ApiResponseHelper::error('request hoort niet bij jou', 404);
         }
         try{
             $req->delete();

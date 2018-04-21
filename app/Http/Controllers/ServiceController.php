@@ -45,7 +45,7 @@ class ServiceController extends Controller
             return ApiResponseHelper::error('service bestaat niet', 404);
         }
         if ($service->user_id != $user->id) {
-            return ApiResponseHelper::error('service hoort niet bij jou');
+            return ApiResponseHelper::error('service hoort niet bij jou', 404);
         }
         $input = $request->all();
         $rules = [
@@ -121,7 +121,7 @@ class ServiceController extends Controller
             return ApiResponseHelper::error('service bestaat niet', 404);
         }
         if ($service->user_id != $user->id) {
-            return ApiResponseHelper::error('service hoort niet bij jou');
+            return ApiResponseHelper::error('service hoort niet bij jou', 404);
         }
         $taggable = Taggable::where('taggable_type', 'App\Service')->where('taggable_id', $serviceId)->where('tag_id', $tagId);
         $taggable->delete();

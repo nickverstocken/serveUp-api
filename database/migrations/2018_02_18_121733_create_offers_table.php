@@ -16,6 +16,7 @@ class CreateOffersTable extends Migration
         Schema::create('offers', function (Blueprint $table) {
             $table->increments('id');
             $table->boolean('accepted')->default(0);
+            $table->boolean('hired')->default(0);
             $table->double('price_offer', 12, 2)->nullable();
             $table->string('rate')->nullable();
             $table->integer('request_id')->unsigned();

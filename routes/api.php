@@ -48,7 +48,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //request
     Route::get('request/all', 'RequestController@index');
+    Route::get('request/{id}', 'RequestController@get');
     Route::post('request/save', 'RequestController@save');
     Route::put('request/{id}/update', 'RequestController@update');
     Route::delete('request/{id}/delete', 'RequestController@delete');
+
+    //offer
+    Route::get('request/{reqid}/offer/{id}', 'OfferController@get');
+    Route::get('offer/{id}/messages', 'OfferController@getMessages');
+    Route::post('offer/{id}/message', 'OfferController@sendMessage');
 });

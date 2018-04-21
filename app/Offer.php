@@ -56,4 +56,7 @@ class Offer extends Model
 	{
 		return $this->belongsTo(\App\Service::class);
 	}
+    public function messages(){
+        return $this->morphMany('App\Message', 'message' );
+    }
 }

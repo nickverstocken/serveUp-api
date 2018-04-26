@@ -9,6 +9,7 @@ use App\Tag;
 use App\Service;
 use App\Taggable;
 use App\City;
+use App\Offer;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponseHelper;
 use App\Http\Helpers\ImageUpload;
@@ -156,5 +157,40 @@ class ServiceController extends Controller
     public function getServicesCountNearby(Request $request, $subcatId, $name){
        $services = SubCategory::find($subcatId)->services()->where('areas_of_service', 'like', '%' . $name . '%')->select('id')->get();
        Return ApiResponseHelper::success(['ids' => $services, 'count' => $services->count()]);
+    }
+    public function getRequests(Request $request, $serviceId){
+        $service = Service::find($serviceId);
+        $user = JWTAuth::parseToken()->toUser();
+        if (!$service) {
+            return ApiResponseHelper::error('service bestaat niet', 404);
+        }
+        if ($service->user_id != $user->id) {
+            return ApiResponseHelper::error('service hoort niet bij jou', 404);
+        }
+        $filter = $request->input('filter', 'requests');
+        $query = Offer::where('service_id', $service->id);
+        switch ($filter) {
+            case 'requests':
+                $query = $query->where('accepted', false);
+                break;
+            case 'accepted':
+                $query = $query->where('accepted', true)->where('hired', false);
+                break;
+            case 'hired':
+                $query = $query->where('hired', true);
+                break;
+            case 'archived':
+                $query = $query->onlyTrashed();
+                break;
+            default:
+                $query = $query->where('accepted', false);
+        }
+        $query = $query->with(['request' => function($q){
+            $q->with('user');
+        }])->get();
+        return ApiResponseHelper::success(['offers' => $query]);
+    }
+    public function getOfferMessages(Request $request,$serviceId, $offerId){
+
     }
 }

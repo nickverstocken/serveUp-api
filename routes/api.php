@@ -44,6 +44,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     //service
     Route::get('service/{subcatId}/nearby/{name}/count', 'ServiceController@getServicesCountNearby');
     Route::get('service/{serviceId}/requests', 'ServiceController@getRequests');
+    Route::get('service/{serviceId}/offer/{offerId}/messages', 'ServiceController@getOfferMessages');
     Route::post('service/update/{serviceId}', 'ServiceController@update');
     Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
 

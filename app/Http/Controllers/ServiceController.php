@@ -191,6 +191,21 @@ class ServiceController extends Controller
         return ApiResponseHelper::success(['offers' => $query]);
     }
     public function getOfferMessages(Request $request,$serviceId, $offerId){
-
+        $user = JWTAuth::parseToken()->toUser();
+        $service = $user->services()->find($serviceId);
+        if(!$service){
+            return ApiResponseHelper::error('Fout', 404);
+        }
+        $offer = Offer::find($offerId);
+        if (!$offer) {
+            return ApiResponseHelper::error('Offer bestaat niet', 404);
+        }
+        if ($offer->service_id != $serviceId) {
+            return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
+        }
+        $messages = $offer->messages()->with(['sender' => function($q){
+            $q->select()->get();
+        }, 'receiver'])->get();
+        return ApiResponseHelper::success(['offer'=> $offer, 'messages' => $messages]);
     }
 }

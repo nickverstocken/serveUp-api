@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHelper;
+use App\Message;
 use App\Offer;
 use App\Request as RequestModel;
 use Illuminate\Http\Request;
@@ -63,6 +64,9 @@ class RequestController extends Controller
                 $offer = new Offer;
                 $offer->service_id = $id['id'];
                 $req->offers()->save($offer);
+                $messagebody = 'Datum : ' . $req->due_date . ' \r\n ' . ' locatie : ' . $req->city->zip . ', ' . $req->city->name . ' \r\n ' . 'Beschrijving : ' . $req->description;
+                $message = new Message(['message' => $messagebody, 'sender_id' => $user->id, 'receiver_id' => $offer->service->user->id, 'type' => 'request']);
+                $offer->messages()->save($message);
             }
             DB::commit();
             return ApiResponseHelper::success(['data' => $req->toArray()]);

@@ -31,6 +31,9 @@ Route::group(['middleware' => 'cors', 'prefix' => 'v1'], function(){
 Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function() {
     //auth
     Route::post('logout', 'AuthController@logout');
+    Route::post('pusher/auth', 'PusherController@postAuth');
+    //user
+    Route::get('notifications', 'UserController@notifications');
 
     //categories
     Route::get('categories', 'CategoryController@index');
@@ -45,6 +48,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::get('service/{subcatId}/nearby/{name}/count', 'ServiceController@getServicesCountNearby');
     Route::get('service/{serviceId}/requests', 'ServiceController@getRequests');
     Route::get('service/{serviceId}/offer/{offerId}/messages', 'ServiceController@getOfferMessages');
+    Route::put('service/{serviceId}/offer/{offerId}/update', 'ServiceController@updateOffer');
+    Route::post('service/offer/{id}/message', 'ServiceController@sendOfferMessage');
     Route::post('service/update/{serviceId}', 'ServiceController@update');
     Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
 

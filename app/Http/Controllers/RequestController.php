@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHelper;
 use App\Message;
+use App\Notifications\NewOffer;
 use App\Offer;
 use App\Request as RequestModel;
 use Illuminate\Http\Request;
@@ -64,15 +65,16 @@ class RequestController extends Controller
                 $offer = new Offer;
                 $offer->service_id = $id['id'];
                 $req->offers()->save($offer);
-                $messagebody = 'Datum : ' . $req->due_date . ' \r\n ' . ' locatie : ' . $req->city->zip . ', ' . $req->city->name . ' \r\n ' . 'Beschrijving : ' . $req->description;
+                $messagebody = 'Datum : ' . $req->due_date . "\n" . 'Locatie : ' . $req->city->zip . ', ' . $req->city->name . "\n" . 'Beschrijving : ' . trim($req->description);
                 $message = new Message(['message' => $messagebody, 'sender_id' => $user->id, 'receiver_id' => $offer->service->user->id, 'type' => 'request']);
                 $offer->messages()->save($message);
+                $offer->service->user->notify(new NewOffer($user, $offer));
             }
             DB::commit();
             return ApiResponseHelper::success(['data' => $req->toArray()]);
         }catch (\Exception $ex){
             DB::rollBack();
-            return ApiResponseHelper::error('Er ging iets mis', 500);
+            return ApiResponseHelper::error($ex , 500);
         }
     }
     public function update(Request $request, $id){
@@ -107,7 +109,7 @@ class RequestController extends Controller
             return ApiResponseHelper::error('request hoort niet bij jou', 404);
         }
         try{
-            $req->delete();
+            $req->forceDelete();
             return ApiResponseHelper::success([], 'request succesvol verwijderd!');
         }catch(\Exception $ex){
             return ApiResponseHelper::error('Er ging iets mis', 500);

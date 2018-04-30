@@ -61,7 +61,7 @@ class OfferController extends Controller
         if ($validator->fails()) {
             return ApiResponseHelper::error($validator->messages(), 422);
         }
-        $message = new Message(['message' => $input['message'], 'sender_id' => $user->id, 'receiver_id' => $receiver]);
+        $message = new Message(['message' => trim($input['message']), 'sender_id' => $user->id, 'receiver_id' => $receiver]);
         $offer->messages()->save($message);
         $message = $message->with(['sender' => function($q){
             $q->select()->get();

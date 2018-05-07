@@ -47,9 +47,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     //service
     Route::get('service/{subcatId}/nearby/{name}/count', 'ServiceController@getServicesCountNearby');
     Route::get('service/{serviceId}/requests', 'ServiceController@getRequests');
-    Route::get('service/{serviceId}/offer/{offerId}/messages', 'ServiceController@getOfferMessages');
     Route::put('service/{serviceId}/offer/{offerId}/update', 'ServiceController@updateOffer');
-    Route::post('service/offer/{id}/message', 'ServiceController@sendOfferMessage');
     Route::post('service/update/{serviceId}', 'ServiceController@update');
     Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
 
@@ -62,6 +60,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //offer
     Route::get('request/{reqid}/offer/{id}', 'OfferController@get');
-    Route::get('offer/{id}/messages', 'OfferController@getMessages');
-    Route::post('offer/{id}/message', 'OfferController@sendMessage');
+
+    //message
+    Route::post('offer/{id}/message', 'MessageController@sendMessage');
+    Route::get('offer/{id}/messages', 'MessageController@getMessages');
+
+    //appointment
+    Route::post('/appointment/save', 'AppointmentController@save');
 });

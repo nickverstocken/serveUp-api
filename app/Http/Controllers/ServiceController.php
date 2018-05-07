@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Http\Helpers\FunctionsHelper;
+use App\Notifications\OfferAction;
 use App\SubCategory;
 use DB;
 use App\Tag;
@@ -195,27 +197,6 @@ class ServiceController extends Controller
         }])->get();
         return ApiResponseHelper::success(['offers' => $query]);
     }
-
-    public function getOfferMessages(Request $request, $serviceId, $offerId)
-    {
-        $user = JWTAuth::parseToken()->toUser();
-        $service = $user->services()->find($serviceId);
-        if (!$service) {
-            return ApiResponseHelper::error('Fout', 404);
-        }
-        $offer = Offer::find($offerId);
-        if (!$offer) {
-            return ApiResponseHelper::error('Offer bestaat niet', 404);
-        }
-        if ($offer->service_id != $serviceId) {
-            return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
-        }
-        $messages = $offer->messages()->with(['sender' => function ($q) {
-            $q->select()->get();
-        }, 'receiver'])->get();
-        return ApiResponseHelper::success(['offer' => $offer, 'messages' => $messages]);
-    }
-
     public function updateOffer(Request $request, $serviceId, $offerId)
     {
         $user = JWTAuth::parseToken()->toUser();
@@ -243,8 +224,10 @@ class ServiceController extends Controller
         switch ($input['action']) {
             case 'accept':
                 $offer->accepted = true;
+                $offer->request->user->notify(new OfferAction($user, $offer, 'accepted'));
                 break;
             case 'decline':
+                $offer->request->user->notify(new OfferAction($user, $offer, 'declined'));
                 $offer->delete();
                 break;
             case 'price_offer':
@@ -256,31 +239,22 @@ class ServiceController extends Controller
 
         return ApiResponseHelper::success(['offer' => $offer, 'action' => $input['action']]);
     }
-
-    public function sendOfferMessage(Request $request, $id)
-    {
-        $user = JWTAuth::parseToken()->toUser();
-        $offer = Offer::find($id);
-        if (!$offer) {
-            return ApiResponseHelper::error('Offer bestaat niet', 404);
-        }
-        if ($offer->service->user_id != $user->id) {
-            return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
-        }
-        $receiver = $offer->request->user_id;
-        $input = $request->all();
-        $rules = [
-            'message' => 'required'
-        ];
-        $validator = Validator::make($input, $rules);
-        if ($validator->fails()) {
-            return ApiResponseHelper::error($validator->messages(), 422);
-        }
-        $message = new Message(['message' => trim($input['message']), 'sender_id' => $user->id, 'receiver_id' => $receiver]);
-        $offer->messages()->save($message);
-        $message = $message->with(['sender' => function ($q) {
-            $q->select()->get();
-        }, 'receiver'])->find($message->id);
-        return ApiResponseHelper::success(['message' => $message]);
-    }
+    /*
+     {date: Thu May 31 2018 00:00:00 GMT+0200 (CEST), time: "21:15", location: {…}}
+date
+Thu May 31 2018 00:00:00 GMT+0200 (CEST)
+location
+{
+address:"Kykhillweg, 8660 De Panne, Belgium"
+image:"https://maps.googleapis.com/maps/api/staticmap?size=400x400&zoom=14&markers=size:mid|color:red|Kykhillweg, 8660 De Panne, Belgium&key=AIzaSyBX4ApQUnjyZgcanGwjqgP1QfgBzAYRe8I"
+lat:51.0990064
+lng:2.5898994000000357
+url:"https://maps.google.com/?q=Kykhillweg,+8660+De+Panne,+Belgium&ftid=0x47dc96e7d6dea097:0xeaec5e22e5184b12"
+__proto__
+:
+Object
+time
+:
+"21:15"
+     */
 }

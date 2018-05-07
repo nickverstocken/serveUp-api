@@ -34,6 +34,7 @@ class CreateMessagesTable extends Migration
                 ->references('id')->on('images')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->dateTime('read_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

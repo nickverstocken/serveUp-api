@@ -2,31 +2,32 @@
 
 namespace App\Notifications;
 
-use App\User;
-use App\Offer;
-use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
-class NewOffer extends Notification
+use App\Offer;
+use App\User;
+class OfferAction extends Notification
 {
-
+    use Queueable;
 
     protected $user;
     protected $offer;
-
+    protected $action;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
     /**
-     * NewOffer constructor.
+     * OfferAction constructor.
      * @param User $user
      * @param Offer $offer
      */
-    public function __construct(User $user, Offer $offer)
+    public function __construct(User $user, Offer $offer, $action)
     {
+        $this->action = $action;
         $this->user = $user;
         $this->offer = $offer;
     }
@@ -69,21 +70,13 @@ class NewOffer extends Notification
             'read_at' => null,
             'data' => [
                 'offer_id' => $this->offer->id,
+                'request_id' => $this->offer->request->id,
                 'service' => $this->offer->service->name,
                 'service_id' => $this->offer->service->id,
                 'user' => $this->user->fname . ' ' . $this->user->name,
-                'image' => $this->user->picture_thumb
+                'image' => $this->user->picture_thumb,
+                'action' => $this->action
             ],
-        ];
-    }
-    public function toDatabase($notifiable)
-    {
-        return [
-            'offer_id' => $this->offer->id,
-            'service' => $this->offer->service->name,
-            'service_id' => $this->offer->service->id,
-            'user' => $this->user->fname . ' ' . $this->user->name,
-            'image' => $this->user->picture_thumb
         ];
     }
     public function toBroadcast($notifiable)
@@ -93,11 +86,25 @@ class NewOffer extends Notification
             'read_at' => null,
             'data' => [
                 'offer_id' => $this->offer->id,
+                'request_id' => $this->offer->request->id,
                 'service' => $this->offer->service->name,
                 'service_id' => $this->offer->service->id,
                 'user' => $this->user->fname . ' ' . $this->user->name,
-                'image' => $this->user->picture_thumb
+                'image' => $this->user->picture_thumb,
+                'action' => $this->action
             ],
         ]);
+    }
+    public function toDatabase($notifiable)
+    {
+        return [
+            'offer_id' => $this->offer->id,
+            'request_id' => $this->offer->request->id,
+            'service' => $this->offer->service->name,
+            'service_id' => $this->offer->service->id,
+            'user' => $this->user->fname . ' ' . $this->user->name,
+            'image' => $this->user->picture_thumb,
+            'action' => $this->action
+        ];
     }
 }

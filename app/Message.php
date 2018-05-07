@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
  * @property int $receiver_id
  * @property string $type
  * @property int $media_id
+ * @property \Carbon\Carbon $read_at
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  *
@@ -44,7 +45,8 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'type',
-        'media_id'
+        'media_id',
+        'read_at'
     ];
     public function offer(){
         return $this->morphedByMany('App\Offer', 'message');

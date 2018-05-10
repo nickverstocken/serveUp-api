@@ -75,7 +75,7 @@ class MessageController extends Controller
         }
         $messages = $offer->messages()->with(['sender' => function ($q) {
             $q->select()->get();
-        }, 'receiver'])->get();
+        }, 'receiver'])->orderBy('updated_at')->get();
         return ApiResponseHelper::success(['offer' => $offer, 'messages' => $messages]);
     }
     private function createAppointmentMessage($input){

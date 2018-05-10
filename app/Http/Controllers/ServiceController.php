@@ -239,22 +239,4 @@ class ServiceController extends Controller
 
         return ApiResponseHelper::success(['offer' => $offer, 'action' => $input['action']]);
     }
-    /*
-     {date: Thu May 31 2018 00:00:00 GMT+0200 (CEST), time: "21:15", location: {…}}
-date
-Thu May 31 2018 00:00:00 GMT+0200 (CEST)
-location
-{
-address:"Kykhillweg, 8660 De Panne, Belgium"
-image:"https://maps.googleapis.com/maps/api/staticmap?size=400x400&zoom=14&markers=size:mid|color:red|Kykhillweg, 8660 De Panne, Belgium&key=AIzaSyBX4ApQUnjyZgcanGwjqgP1QfgBzAYRe8I"
-lat:51.0990064
-lng:2.5898994000000357
-url:"https://maps.google.com/?q=Kykhillweg,+8660+De+Panne,+Belgium&ftid=0x47dc96e7d6dea097:0xeaec5e22e5184b12"
-__proto__
-:
-Object
-time
-:
-"21:15"
-     */
 }

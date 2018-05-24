@@ -82,6 +82,12 @@ class ServiceController extends Controller
                 $service->areas_of_service = self::getCitiesWithinRadius($service->city->zip, $service->city->name, $request->get('max_km'));
             }
         }
+        if ($request->has('business_hours')) {
+            $input['business_hours'] = json_decode($request->get('business_hours'), true);
+        }
+        if ($request->has('price_extras')) {
+            $input['price_extras'] = json_decode($request->get('price_extras'), true);
+        }
         if ($request->has('tags')) {
             $tags = $request->json()->get('tags');
             foreach ($tags as $tag) {

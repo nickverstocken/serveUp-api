@@ -26,10 +26,11 @@ class CategoryController extends Controller
         $this->subcategoryTransformer = $subCategoryTransformer;
         $this->fractal->setSerializer(new ArraySerializer());
     }
-    public function index(){
+    public function index(Request $request){
         $query = Category::get();
         $categories = new Collection($query, $this->categoryTransformer);
         $categories = $this->fractal->createData($categories);
+        $this->fractal->parseIncludes($request->get('include', ''));
         $categories = $categories->toArray();
         return ApiResponseHelper::success(['categories' => $categories]);
     }

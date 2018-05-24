@@ -7,12 +7,15 @@
  */
 
 namespace App\Http\Transformers;
-
+use App;
 use App\Category;
 use League\Fractal\TransformerAbstract;
 use Illuminate\Support\Facades\Storage;
 class CategoryTranformer extends TransformerAbstract
 {
+    protected $availableIncludes = [
+        'subcategories'
+    ];
     public function transform(Category $category)
     {
 
@@ -24,5 +27,12 @@ class CategoryTranformer extends TransformerAbstract
             'created_at' => $category->created_at->toDateTimeString(),
             'updated_at' => $category->updated_at->toDateTimeString()
         ];
+    }
+    public function includesubcategories(Category $category)
+    {
+        if (!$category->subcategories) {
+            return null;
+        }
+        return $this->collection($category->subcategories, App::make(App\Http\Transformers\SubCategoryTransformer::class));
     }
 }

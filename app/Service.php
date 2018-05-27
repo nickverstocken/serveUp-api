@@ -32,6 +32,7 @@ use Illuminate\Notifications\Notifiable;
  * @property float $price_estimate
  * @property string $rate
  * @property string $price_extras
+ * @property string $faq
  * @property string $standard_response
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -57,11 +58,13 @@ class Service extends Model
         'business_hours' => 'array',
         'areas_of_service' => 'array',
         'price_extras' => 'array',
-        'social_networks' => 'array'
+        'social_networks' => 'array',
+        'faq' => 'array'
 	];
 
 	protected $fillable = [
 		'name',
+        'user_id',
 		'description',
         'subcategory_id',
         'category_id',
@@ -80,6 +83,7 @@ class Service extends Model
 		'price_estimate',
 		'rate',
 		'price_extras',
+        'faq',
 		'standard_response'
 	];
 
@@ -103,10 +107,6 @@ class Service extends Model
 	{
 		return $this->hasMany(\App\Offer::class);
 	}
-    public function faqAnswers()
-    {
-        return $this->hasMany(\App\FaqAnswer::class);
-    }
     public function images(){
         return $this->morphMany('App\Image', 'image' );
     }

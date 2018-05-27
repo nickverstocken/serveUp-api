@@ -47,10 +47,11 @@ class CreateServicesTable extends Migration
             $table->string('banner', 100)->nullable();
             $table->string('business_hours', 300)->nullable();
             $table->text('areas_of_service')->nullable();
-            $table->integer('max_km')->nullable();
+            $table->integer('max_km')->default(5);
             $table->double('price_estimate', 12, 2);
             $table->string('rate');
             $table->text('price_extras')->nullable();
+            $table->text('faq')->nullable();
             $table->string('standard_response', 7000)->nullable();
             $table->softDeletes();
             $table->timestamps();

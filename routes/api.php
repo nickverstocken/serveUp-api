@@ -49,6 +49,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::get('service/{serviceId}/requests', 'ServiceController@getRequests');
     Route::put('service/{serviceId}/offer/{offerId}/update', 'ServiceController@updateOffer');
     Route::post('service/update/{serviceId}', 'ServiceController@update');
+    Route::post('service/save', 'ServiceController@save');
     Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
 
     //request

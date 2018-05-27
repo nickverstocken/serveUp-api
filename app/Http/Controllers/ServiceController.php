@@ -62,6 +62,9 @@ class ServiceController extends Controller
         if ($request->hasFile('logo')) {
             $rules['logo'] = 'image|mimes:jpg,png,jpeg';
         }
+        if ($request->hasFile('banner')) {
+            $rules['banner'] = 'image|mimes:jpg,png,jpeg';
+        }
         $validator = Validator::make($input, $rules);
         if ($validator->fails()) {
             return ApiResponseHelper::error($validator->messages(), 422);
@@ -76,6 +79,15 @@ class ServiceController extends Controller
         } else {
             $input['logo'] = $service->logo;
         }
+        if ($request->hasFile('banner')) {
+            $file = $input['banner'];
+            $extension = $file->getClientOriginalExtension();
+            $name = $service->user_id;
+            $path = ImageUpload::saveImage($input['banner'], 800, 350, 'banner', $extension, $name . '/service/' . $service->id);
+            $input['banner'] = $path . '?' . Carbon::now()->timestamp;
+        } else {
+            $input['banner'] = $service->banner;
+        }
         if ($request->has('max_km')) {
             if ($service->max_km != $request->get('max_km')) {
 
@@ -87,6 +99,9 @@ class ServiceController extends Controller
         }
         if ($request->has('price_extras')) {
             $input['price_extras'] = json_decode($request->get('price_extras'), true);
+        }
+        if ($request->has('social_networks')) {
+            $input['social_networks'] = json_decode($request->get('social_networks'), true);
         }
         if ($request->has('tags')) {
             $tags = $request->json()->get('tags');
@@ -114,6 +129,77 @@ class ServiceController extends Controller
                 $tag->services()->save($service);
             }
         }
+    }
+
+    public function save(Request $request)
+    {
+        $user = JWTAuth::parseToken()->toUser();
+        $input = $request->all();
+        $rules = [
+            'name' => 'string|max:50',
+            'description' => 'string',
+            'address' => 'required|string|max:191',
+            'tel' => 'nullable|string|max:20',
+            'website' => 'nullable|string|max:191',
+            'city_id' => 'required'
+        ];
+        if ($request->hasFile('logo')) {
+            $rules['logo'] = 'image|mimes:jpg,png,jpeg';
+        }
+        if ($request->hasFile('banner')) {
+            $rules['banner'] = 'image|mimes:jpg,png,jpeg';
+        }
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return ApiResponseHelper::error($validator->messages(), 422);
+        }
+        if ($request->has('business_hours')) {
+            $input['business_hours'] = json_decode($request->get('business_hours'), true);
+        }
+        if ($request->has('price_extras')) {
+            $input['price_extras'] = json_decode($request->get('price_extras'), true);
+        }
+        if ($request->has('social_networks')) {
+            $input['social_networks'] = json_decode($request->get('social_networks'), true);
+        }
+        try{
+            DB::beginTransaction();
+            $input['user_id'] = $user->id;
+            $service = Service::create($input);
+            if ($request->has('max_km')) {
+                $service->areas_of_service = self::getCitiesWithinRadius($service->city->zip, $service->city->name, $request->get('max_km'));
+            }
+            if ($request->has('tags')) {
+                $tags = $request->json()->get('tags');
+                foreach ($tags as $tag) {
+                    $this->saveTags($tag['name'], $service);
+                }
+            }
+            if ($request->hasFile('logo')) {
+                $file = $input['logo'];
+                $extension = $file->getClientOriginalExtension();
+                $name = $user->id;
+                $path = ImageUpload::saveImage($input['logo'], 150, 150, 'logo', $extension, $name . '/service/' . $service->id);
+                $service->logo = $path . '?' . Carbon::now()->timestamp;
+            }
+            if ($request->hasFile('banner')) {
+                $file = $input['banner'];
+                $extension = $file->getClientOriginalExtension();
+                $name = $user->id;
+                $path = ImageUpload::saveImage($input['banner'], 800, 350, 'banner', $extension, $name . '/service/' . $service->id);
+                $service->banner = $path . '?' . Carbon::now()->timestamp;
+            }
+            $service->save();
+            DB::commit();
+            $service = new Item($service, $this->serviceTransformer);
+            $service = $this->fractal->createData($service);
+            $service = $service->toArray();
+            return ApiResponseHelper::success(['service' => $service], 'service save success');
+        }catch (\Exception $ex){
+            DB::rollBack();
+            return ApiResponseHelper::error($ex->getMessage(), 500);
+        }
+
     }
 
     public function removeTagFromService($serviceId, $tagName)
@@ -203,6 +289,7 @@ class ServiceController extends Controller
         }])->get();
         return ApiResponseHelper::success(['offers' => $query]);
     }
+
     public function updateOffer(Request $request, $serviceId, $offerId)
     {
         $user = JWTAuth::parseToken()->toUser();

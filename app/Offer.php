@@ -24,6 +24,7 @@ use Illuminate\Notifications\Notifiable;
  * 
  * @property \App\Request $request
  * @property \App\Service $service
+ * @property \Illuminate\Database\Eloquent\Collection $appointments
  *
  * @package App
  */
@@ -58,5 +59,8 @@ class Offer extends Model
 	}
     public function messages(){
         return $this->morphMany('App\Message', 'message' );
+    }
+    public function appointments(){
+        return $this->hasMany(\App\Appointment::class);
     }
 }

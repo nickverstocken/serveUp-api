@@ -252,7 +252,8 @@ class ServiceController extends Controller
 
     public function getServicesCountNearby(Request $request, $subcatId, $name)
     {
-        $services = SubCategory::find($subcatId)->services()->where('areas_of_service', 'like', '%' . $name . '%')->select('id')->get();
+        $user = JWTAuth::parseToken()->toUser();
+        $services = SubCategory::find($subcatId)->services()->where('areas_of_service', 'like', '%' . $name . '%')->where('user_id', '!=', $user->id)->select('id')->get();
         Return ApiResponseHelper::success(['ids' => $services, 'count' => $services->count()]);
     }
 

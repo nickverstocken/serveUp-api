@@ -35,7 +35,8 @@ class Appointment extends Model
         'id' => 'int',
         'creator_id' => 'int',
         'offer_id' => 'int',
-        'approved' => 'bool'
+        'approved' => 'bool',
+        'location' => 'array'
     ];
     protected $fillable = [
         'title',

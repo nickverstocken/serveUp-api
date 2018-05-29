@@ -33,7 +33,7 @@ class serviceSeeder extends Seeder
                 'rate' => 'uur'
             ),
             array(
-                'user_id' => 1,
+                'user_id' => 3,
                 'name' => 'Discobar All Music',
                 'description' => 'Discobar All Music zorgt voor de gepaste muziek op uw Evenementen, Huwelijksfeesten, Fuiven, Bals, Verjaardagsfeestjes en Recepties. Daarnaast kan u bij ons ook steeds terecht voor het huren van Licht- en geluidsinstallaties en Juke-boxen. Indien u vragen heeft, aarzel dan zeker niet om ons te contacteren.',
                 'address' => 'Morkhovenseweg 1',

@@ -50,9 +50,9 @@ class AppointmentController extends Controller
         $appointments = new Collection($query, $this->fullCalendarTranformer);
         $appointments = $this->fractal->createData($appointments);
         $appointments = $appointments->toArray();
-        $events['personal'] = $appointments;
+        $events['cat0'] = $appointments;
 
-        foreach ($user->services as $service) {
+        foreach ($user->services as $key=>$service) {
             $id = $service->id;
 
             $query = Appointment::whereHas('offer', function ($q) use ($user, $id) {
@@ -64,12 +64,18 @@ class AppointmentController extends Controller
             $appointments = new Collection($query, $this->fullCalendarTranformer);
             $appointments = $this->fractal->createData($appointments);
             $appointments = $appointments->toArray();
-            $events[$service->id] = $appointments;
+            $events['cat' . ($key + 1)] = $appointments;
         }
 
         return ApiResponseHelper::success(['appointments' => $events]);
     }
-
+    public function show(Request $request, $id){
+        $appointment = Appointment::with(['offer.service.user', 'offer.request.user'])->find($id);
+        if(!$appointment){
+            return ApiResponseHelper::error('appointment not found', 404);
+        }
+        return ApiResponseHelper::success(['appointment' => $appointment]);
+    }
     public function save(Request $request)
     {
         $input = $request->all();
@@ -85,7 +91,7 @@ class AppointmentController extends Controller
             return ApiResponseHelper::error($validator->messages(), 422);
         }
         $appointment = new Appointment($input);
-        $appointment->location = json_encode($input['location']);
+        $appointment->location = $input['location']  ;
         DB::beginTransaction();
         $appointment->save();
         if ($input['offer_id'] && $input['receiver_id']) {

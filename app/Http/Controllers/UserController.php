@@ -89,6 +89,6 @@ class UserController extends Controller
     public function notifications()
     {
         $user = JWTAuth::parseToken()->toUser();
-        return ApiResponseHelper::success(['notifications' => $user->unreadNotifications()->limit(5)->get(), 'unread' => $user->unreadNotifications()->count()]);
+        return ApiResponseHelper::success(['notifications' => $user->unreadnotifications()->get(), 'unread' => $user->unreadNotifications()->count()]);
     }
 }

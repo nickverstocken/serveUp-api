@@ -46,7 +46,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //service
     Route::get('service/{subcatId}/nearby/{name}/count', 'ServiceController@getServicesCountNearby');
-    Route::get('service/{serviceId}/requests', 'ServiceController@getRequests');
+    Route::get('service/{serviceId}/requests', ['middleware' => 'throttle:1,0', 'uses' => 'ServiceController@getRequests']);
     Route::put('service/{serviceId}/offer/{offerId}/update', 'ServiceController@updateOffer');
     Route::post('service/update/{serviceId}', 'ServiceController@update');
     Route::post('service/save', 'ServiceController@save');
@@ -61,7 +61,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //offer
     Route::get('request/{reqid}/offer/{id}', 'OfferController@get');
-
+    Route::get('offers', 'OfferController@index');
+    Route::put('offer/{id}/update', 'OfferController@update');
+    Route::post('offer/{id}/priceoffer', 'OfferController@sendPriceOffer');
+    Route::put('offer/{id}/actionpriceoffer', 'OfferController@actionPriceOffer');
     //message
     Route::post('offer/{id}/message', 'MessageController@sendMessage');
     Route::get('offer/{id}/messages', 'MessageController@getMessages');

@@ -34,6 +34,7 @@ class CreateAppointmentsTable extends Migration
                 ->references('id')->on('services')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->integer('message_id')->unsigned()->nullable();
             $table->boolean('approved')->default(false);
             $table->softDeletes();
             $table->timestamps();

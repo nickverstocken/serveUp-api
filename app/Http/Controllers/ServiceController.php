@@ -90,8 +90,13 @@ class ServiceController extends Controller
         }
         if ($request->has('max_km')) {
             if ($service->max_km != $request->get('max_km')) {
-
                 $service->areas_of_service = self::getCitiesWithinRadius($service->city->zip, $service->city->name, $request->get('max_km'));
+            }
+        }
+        if($request->has('city_id')){
+            if ($service->city_id != $request->get('city_id')){
+
+                $service->areas_of_service = self::getCitiesWithinRadius(json_decode($request['city'])->zip, json_decode($request['city'])->name, $request->get('max_km'));
             }
         }
         if ($request->has('business_hours')) {
@@ -261,20 +266,21 @@ class ServiceController extends Controller
     {
         $service = Service::find($serviceId);
         $user = JWTAuth::parseToken()->toUser();
-        if (!$service) {
+        $filter = $request->input('filter', 'requests');
+        if (!$service && $filter != 'personal') {
             return ApiResponseHelper::error('service bestaat niet', 404);
         }
         if ($service->user_id != $user->id) {
             return ApiResponseHelper::error('service hoort niet bij jou', 404);
         }
-        $filter = $request->input('filter', 'requests');
+
         $query = Offer::where('service_id', $service->id);
         switch ($filter) {
             case 'requests':
-                $query = $query->where('accepted', false);
+                $query = $query->where('status', 'awaiting');
                 break;
             case 'accepted':
-                $query = $query->where('accepted', true)->where('hired', false);
+                $query = $query->where('status', 'accepted')->where('hired', false);
                 break;
             case 'hired':
                 $query = $query->where('hired', true);
@@ -285,9 +291,15 @@ class ServiceController extends Controller
             default:
                 $query = $query->where('accepted', false);
         }
+
         $query = $query->with(['request' => function ($q) {
             $q->with('user');
         }])->get();
+        if($filter != 'personal'){
+            $query->each(function($offer) {
+                $offer->load('latestMessage');
+            });
+        }
         return ApiResponseHelper::success(['offers' => $query]);
     }
 
@@ -318,11 +330,12 @@ class ServiceController extends Controller
         switch ($input['action']) {
             case 'accept':
                 $offer->accepted = true;
+                $offer->status = 'accepted';
                 $offer->request->user->notify(new OfferAction($user, $offer, 'accepted'));
                 break;
             case 'decline':
+                $offer->status = 'declined';
                 $offer->request->user->notify(new OfferAction($user, $offer, 'declined'));
-                $offer->delete();
                 break;
             case 'price_offer':
                 $offer->price_offer = $input['price'];

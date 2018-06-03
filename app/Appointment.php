@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $location
  * @property bool $approved
  * @property int $creator_id
+ * @property int $message_id
  * @property int $offer_id
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -35,6 +36,7 @@ class Appointment extends Model
         'id' => 'int',
         'creator_id' => 'int',
         'offer_id' => 'int',
+        'message_id' => 'int',
         'approved' => 'bool',
         'location' => 'array'
     ];
@@ -45,7 +47,8 @@ class Appointment extends Model
         'location',
         'approved',
         'creator_id',
-        'offer_id'
+        'offer_id',
+        'message_id'
     ];
     public function creator()
     {

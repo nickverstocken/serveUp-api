@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
  * @property bool $accepted
  * @property float $price_offer
  * @property string $rate
+ * @property string $status
  * @property int $request_id
  * @property int $service_id
  * @property \Carbon\Carbon $created_at
@@ -44,6 +45,7 @@ class Offer extends Model
 		'accepted',
 		'price_offer',
 		'rate',
+        'status',
 		'request_id',
 		'service_id'
 	];
@@ -62,5 +64,9 @@ class Offer extends Model
     }
     public function appointments(){
         return $this->hasMany(\App\Appointment::class);
+    }
+    public function latestMessage()
+    {
+        return $this->morphOne('\App\Message', 'message')->latest();
     }
 }

@@ -91,9 +91,9 @@ class AppointmentController extends Controller
             return ApiResponseHelper::error($validator->messages(), 422);
         }
         $appointment = new Appointment($input);
-        $appointment->location = $input['location']  ;
-        DB::beginTransaction();
+        $appointment->location = $input['location'];
         $appointment->save();
+        DB::beginTransaction();
         if ($input['offer_id'] && $input['receiver_id']) {
             $offer = Offer::find($input['offer_id']);
             $message = new Message(['message' => json_encode($appointment->toArray()), 'sender_id' => $user->id, 'receiver_id' => $input['receiver_id'], 'type' => 'date']);
@@ -102,7 +102,10 @@ class AppointmentController extends Controller
                 $q->select()->get();
             }, 'receiver'])->find($message->id);
             broadcast(new MessageSent($user, $message->receiver, $message))->toOthers();
+            $appointment->message_id = $message->id;
+            $appointment->save();
         }
+
         DB::commit();
         return ApiResponseHelper::success(['appointment' => $appointment, 'message' => $message]);
     }
@@ -117,12 +120,13 @@ class AppointmentController extends Controller
         }
         $deletmsg = $user->fname . ' ' . $user->name . ' heeft de afspraak "' . $appointment->title . '" geannuleerd';
         DB::beginTransaction();
-        if ($input['offer_id'] && $input['receiver_id'] && $input['message_id']) {
+        if (isset($input['offer_id']) && isset($input['receiver_id']) && isset($input['message_id'])) {
             $offer = Offer::find($input['offer_id']);
             $message = Message::find($input['message_id']);
             $receiver = User::find($input['receiver_id']);
             $messagebody = json_decode($message->message, true);
             $messagebody['cancelled'] = true;
+            $messagebody['approved'] = false;
             $message->message = json_encode($messagebody);
             $infomessage = new Message(['message' => $deletmsg, 'sender_id' => $user->id, 'receiver_id' => $input['receiver_id'], 'type' => 'info']);
             $offer->messages()->save($infomessage);
@@ -154,6 +158,7 @@ class AppointmentController extends Controller
             $message = Message::find($input['message_id']);
             $messagebody = json_decode($message->message, true);
             $messagebody['approved'] = true;
+            $messagebody['cancelled'] = false;
             $message->message = json_encode($messagebody);
             $infomessage = new Message(['message' => $msg, 'sender_id' => $user->id, 'receiver_id' => $input['receiver_id'], 'type' => 'info']);
             $offer->messages()->save($infomessage);

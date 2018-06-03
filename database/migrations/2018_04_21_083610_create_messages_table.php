@@ -28,7 +28,7 @@ class CreateMessagesTable extends Migration
                 ->references('id')->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->enum('type', ['date', 'message', 'image', 'document', 'request', 'info'])->default('message');
+            $table->enum('type', ['date', 'message', 'image', 'document', 'request', 'info', 'price'])->default('message');
             $table->integer('media_id')->unsigned()->nullable();
             $table->foreign('media_id')
                 ->references('id')->on('images')

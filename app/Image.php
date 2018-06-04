@@ -45,4 +45,7 @@ class Image extends Model
     public function service(){
         return $this->morphedByMany('App\Service', 'image');
     }
+    public function offer(){
+        return $this->morphedByMany('App\Offer', 'image');
+    }
 }

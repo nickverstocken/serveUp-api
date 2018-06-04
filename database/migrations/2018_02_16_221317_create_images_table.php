@@ -18,10 +18,10 @@ class CreateImagesTable extends Migration
             $table->integer('image_id');
             $table->string('image_type');
 
-            $table->string('name', 20);
-            $table->string('path', 100);
-            $table->string('path_thumb', 100)->nullable();
-            $table->string('mime_type', 10);
+            $table->string('name');
+            $table->string('path');
+            $table->string('path_thumb')->nullable();
+            $table->string('mime_type');
             $table->softDeletes();
             $table->timestamps();
         });

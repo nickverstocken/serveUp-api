@@ -65,6 +65,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::put('offer/{id}/update', 'OfferController@update');
     Route::post('offer/{id}/priceoffer', 'OfferController@sendPriceOffer');
     Route::put('offer/{id}/actionpriceoffer', 'OfferController@actionPriceOffer');
+    Route::post('offer/{id}/attachements', 'OfferController@saveAttachments');
+
     //message
     Route::post('offer/{id}/message', 'MessageController@sendMessage');
     Route::get('offer/{id}/messages', 'MessageController@getMessages');

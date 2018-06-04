@@ -69,4 +69,7 @@ class Offer extends Model
     {
         return $this->morphOne('\App\Message', 'message')->latest();
     }
+    public function images(){
+        return $this->morphMany('App\Image', 'image' );
+    }
 }

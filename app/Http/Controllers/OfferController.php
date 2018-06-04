@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageEditted;
 use App\Events\MessageSent;
+use App\Image;
 use App\Message;
 use App\Offer;
 use App\User;
@@ -12,6 +13,7 @@ use App\Helpers\ApiResponseHelper;
 use JWTAuth;
 use Validator;
 use DB;
+use Illuminate\Support\Facades\Storage;
 class OfferController extends Controller
 {
     public function get(Request $request, $reqId, $id)
@@ -139,7 +141,56 @@ class OfferController extends Controller
         DB::commit();
         return ApiResponseHelper::success(['message' => $message]);
     }
-    public function acceptPriceOffer(Request $request, $id){
-
+    public function saveAttachments(Request $request, $id)
+    {
+        $user = JWTAuth::parseToken()->toUser();
+        $rules = [
+            'files.*' => 'file|max:2000000'
+        ];
+        $input = $request->all();
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return ApiResponseHelper::error($validator->messages(), 422);
+        }
+        $offer = Offer::find($id);
+        if (!$offer) {
+            return ApiResponseHelper::error('Offer bestaat niet', 404);
+        }
+        if ($offer->request->user_id != $user->id && $offer->service->user_id != $user->id) {
+            return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
+        }
+        $receiver = null;
+        if($offer->request->user_id == $user->id){
+            $receiver = $offer->service->user_id;
+        }
+        if($offer->service->user_id == $user->id){
+            $receiver = $offer->request->user_id;
+        }
+        $files = $request->file('files');
+        $nbr = count($files) - 1;
+        $nbr = $nbr <= 15 ? $nbr : 15;
+        $mediafiles = Collect(new Image());
+        DB::beginTransaction();
+        foreach (range(0, $nbr) as $index) {
+            $media = new Image();
+            $name = $files[$index]->getClientOriginalName();
+            $mime = $files[$index]->getMimeType();
+            $path = $files[$index]->store(
+                'media/'.$request->user()->id, 'public'
+            );
+            $media->path = Storage::disk('public')->url('/' . $path);
+            $media->name = $name;
+            $media->mime_type = $mime;
+            $offer->images()->save($media);
+            $mediafiles[] = $media;
+        }
+        $message = new Message(['message' => json_encode($mediafiles), 'sender_id' => $user->id, 'receiver_id' => $receiver, 'type' => 'document']);
+        $offer->messages()->save($message);
+        $message = $message->with(['sender' => function ($q) {
+            $q->select()->get();
+        }, 'receiver'])->find($message->id);
+        broadcast(new MessageSent($user, $message->receiver, $message))->toOthers();
+        DB::commit();
+        return ApiResponseHelper::success(['media' => $mediafiles, 'message' => $message]);
     }
 }

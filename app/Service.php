@@ -110,6 +110,11 @@ class Service extends Model
     public function images(){
         return $this->morphMany('App\Image', 'image' );
     }
+
+    public function reviews(){
+        return $this->morphMany('App\Review', 'review' );
+    }
+
     public function tags(){
         return $this->morphToMany('App\Tag', 'taggable');
     }

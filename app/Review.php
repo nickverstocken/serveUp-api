@@ -45,8 +45,14 @@ class Review extends Model
 		'path_thumb'
 	];
 
-	public function user()
+	public function fromuser()
 	{
-		return $this->belongsTo(\App\User::class);
+		return $this->belongsTo(\App\User::class, 'user_id');
 	}
+    public function service(){
+        return $this->morphedByMany('App\Service', 'review');
+    }
+    public function user(){
+        return $this->morphedByMany('App\User', 'review');
+    }
 }

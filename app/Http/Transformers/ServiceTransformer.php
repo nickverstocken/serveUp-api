@@ -46,7 +46,9 @@ class ServiceTransformer extends TransformerAbstract
             'price_extras' => $service->price_extras,
             'standard_response' => trim($service->standard_response),
             'creation_date' => $service->created_at->toDateTimeString(),
-            'tags' => $service->tags
+            'tags' => $service->tags,
+            'rating' => $service->reviews()->get()->average('score'),
+            'number_ratings' => $service->reviews()->count('id')
         ];
     }
 }

@@ -264,8 +264,10 @@ class ServiceController extends Controller
 
     public function getRequests(Request $request, $serviceId)
     {
-        $service = Service::find($serviceId);
+
         $user = JWTAuth::parseToken()->toUser();
+        $service = $user->services()->find($serviceId);
+
         $filter = $request->input('filter', 'requests');
         if (!$service && $filter != 'personal') {
             return ApiResponseHelper::error('service bestaat niet', 404);
@@ -274,13 +276,14 @@ class ServiceController extends Controller
             return ApiResponseHelper::error('service hoort niet bij jou', 404);
         }
 
-        $query = Offer::where('service_id', $service->id);
+        $query = $service->offers();
+
         switch ($filter) {
             case 'requests':
                 $query = $query->where('status', 'awaiting');
                 break;
             case 'accepted':
-                $query = $query->where('status', 'accepted')->where('hired', false);
+                $query = $query->where('accepted', true)->where('hired', false);
                 break;
             case 'hired':
                 $query = $query->where('hired', true);
@@ -294,7 +297,7 @@ class ServiceController extends Controller
 
         $query = $query->with(['request' => function ($q) {
             $q->with('user');
-        }])->get();
+        }, 'service'])->get();
         if($filter != 'personal'){
             $query->each(function($offer) {
                 $offer->load('latestMessage');

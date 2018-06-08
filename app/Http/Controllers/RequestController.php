@@ -27,8 +27,8 @@ class RequestController extends Controller
         $user = JWTAuth::parseToken()->toUser();
         $req = $user->requests()->with(['offers' => function($q) {
             $q->with(['service' => function($query){
-                $query->select('name', 'id', 'logo', 'price_estimate', 'rate')->get();
-            }])->get();
+                $query->select('name', 'id', 'logo', 'price_estimate', 'rate')->orderBy('price_estimate')->get();
+            }])->orderBy('status')->get();
         }])->where('id', $id)->first();
         if (!$req) {
             return ApiResponseHelper::error('request bestaat niet', 404);

@@ -84,11 +84,13 @@ class User extends Authenticatable implements JWTSubject
 		return $this->hasMany(\App\Request::class);
 	}
 
-	public function reviews()
+	public function has_reviews()
 	{
 		return $this->hasMany(\App\Review::class);
 	}
-
+    public function reviews(){
+        return $this->morphMany('App\Review', 'review' );
+    }
 	public function user_verifications()
 	{
 		return $this->hasMany(\App\UserVerification::class);

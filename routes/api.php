@@ -66,6 +66,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::post('offer/{id}/priceoffer', 'OfferController@sendPriceOffer');
     Route::put('offer/{id}/actionpriceoffer', 'OfferController@actionPriceOffer');
     Route::post('offer/{id}/attachements', 'OfferController@saveAttachments');
+    Route::put('offer/{id}/hireservice', 'OfferController@hireActionOffer');
 
     //message
     Route::post('offer/{id}/message', 'MessageController@sendMessage');
@@ -77,4 +78,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::post('appointment/save', 'AppointmentController@save');
     Route::put('appointment/{id}/delete', 'AppointmentController@delete');
     Route::put('appointment/{id}/accept', 'AppointmentController@accept');
+
+    //reviews
+    Route::post('offer/{id}/review', 'ReviewController@save');
+    Route::get('user/{id}/reviews', 'ReviewController@userreviews');
+    Route::get('service/{id}/reviews', 'ReviewController@servicereviews');
 });

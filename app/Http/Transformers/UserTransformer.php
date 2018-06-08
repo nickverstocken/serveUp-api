@@ -36,7 +36,9 @@ class UserTransformer extends TransformerAbstract
             'picture_thumb' => trim($user->picture_thumb),
             'creation_date' => $user->created_at->toDateTimeString(),
             'updated_at' => $user->updated_at->toDateTimeString(),
-            'role' => $user->role
+            'role' => $user->role,
+            'rating' => $user->reviews()->get()->average('score'),
+            'number_ratings' => $user->reviews()->count('id')
         ];
     }
     public function includecity(User $user)

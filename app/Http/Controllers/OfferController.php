@@ -6,6 +6,7 @@ use App\Events\MessageEditted;
 use App\Events\MessageSent;
 use App\Image;
 use App\Message;
+use App\Notifications\OfferAction;
 use App\Offer;
 use App\User;
 use Illuminate\Http\Request;
@@ -192,5 +193,36 @@ class OfferController extends Controller
         broadcast(new MessageSent($user, $message->receiver, $message))->toOthers();
         DB::commit();
         return ApiResponseHelper::success(['media' => $mediafiles, 'message' => $message]);
+    }
+
+    public function hireActionOffer(Request $request, $id){
+        $user = JWTAuth::parseToken()->toUser();
+
+        $offer = Offer::find($id);
+
+        if (!$offer) {
+            return ApiResponseHelper::error('Offer bestaat niet', 404);
+        }
+        if ($offer->request->user->id != $user->id) {
+            return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
+        }
+        DB::beginTransaction();
+        $otheroffers = $offer->request->offers->where('id', '!=', $id);
+        $otheroffers->each(function ($otheroffer) use ($user){
+            $otheroffer->hired = false;
+            $otheroffer->status = 'not_hired';
+            $otheroffer->service->user->notify(new OfferAction($user, $otheroffer, 'not_hired'));
+            $otheroffer->save();
+        });
+        if($offer->status != 'declined' || $offer->status != 'awaiting'){
+            $offer->hired = true;
+            $offer->status = 'hired';
+            $offer->service->user->notify(new OfferAction($user, $offer, 'hired'));
+        }else{
+            return ApiResponseHelper::error('Offer is niet geaccepteerd', 403);
+        }
+        $offer->save();
+        DB::commit();
+        return ApiResponseHelper::success(['offer' => $offer, 'action' => 'hired']);
     }
 }

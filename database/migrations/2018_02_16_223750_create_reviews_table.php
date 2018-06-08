@@ -23,10 +23,8 @@ class CreateReviewsTable extends Migration
                 ->references('id')->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->string('title');
             $table->text('comment');
             $table->integer('score');
-            $table->string('path_thumb', 100)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

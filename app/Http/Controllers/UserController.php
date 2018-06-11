@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHelper;
 use App\Http\Helpers\ImageUpload;
+use App\User;
 use Illuminate\Http\Request;
 use Spatie\Fractalistic\ArraySerializer;
 use Validator;
@@ -24,7 +25,14 @@ class UserController extends Controller
         $this->userTransformer = $userTransformer;
         $this->fractal->setSerializer(new ArraySerializer());
     }
-
+    public function get(Request $request, $id){
+        $user = User::find($id);
+        if(!$user){
+            return ApiResponseHelper::error('user not found', 404);
+        }
+        $user = fractal($user, new UserTransformer(), new ArraySerializer())->parseIncludes('city')->toArray();
+        return ApiResponseHelper::success(['user' => $user]);
+    }
     public function update(Request $request)
     {
         $user = JWTAuth::parseToken()->toUser();

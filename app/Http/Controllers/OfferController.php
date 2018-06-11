@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageEditted;
 use App\Events\MessageSent;
+use App\Http\Transformers\OfferTransformer;
 use App\Image;
 use App\Message;
 use App\Notifications\OfferAction;
@@ -12,6 +13,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponseHelper;
 use JWTAuth;
+use Spatie\Fractalistic\ArraySerializer;
 use Validator;
 use DB;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +31,7 @@ class OfferController extends Controller
         if ($offer->request->user_id != $user->id) {
             return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
         }
+        $offer = fractal($offer, new OfferTransformer(), new ArraySerializer())->toArray();
         return ApiResponseHelper::success(['offer' => $offer]);
     }
 

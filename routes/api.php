@@ -37,10 +37,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //categories
     Route::get('categories', 'CategoryController@index');
+    Route::get('categories/{id}', 'CategoryController@get');
     Route::get('subcategories',['middleware' => 'throttle:1,0', 'uses' => 'CategoryController@getSubCategories']);
     Route::get('subcategory/{id}', 'CategoryController@getSubCategory');
     //user
     Route::get('login/user', 'AuthController@getAuthenticatedUser');
+    Route::get('user/{id}', 'UserController@get');
     Route::post('user/update', 'UserController@update');
     Route::post('user/changepassword', 'UserController@updatePassword');
 
@@ -51,6 +53,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::post('service/update/{serviceId}', 'ServiceController@update');
     Route::post('service/save', 'ServiceController@save');
     Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
+    Route::get('service/{id}', 'ServiceController@get');
 
     //request
     Route::get('request/all', 'RequestController@index');

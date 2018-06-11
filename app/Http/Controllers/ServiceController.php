@@ -36,9 +36,14 @@ class ServiceController extends Controller
         $this->fractal->setSerializer(new ArraySerializer());
     }
 
-    public function index(Request $request)
+    public function get(Request $request, $id)
     {
-
+        $service = Service::find($id);
+        if(!$service){
+            return ApiResponseHelper::error('service not found', 404);
+        }
+        $service = fractal($service, new ServiceTransformer(), new ArraySerializer())->parseIncludes('user')->toArray();
+        return ApiResponseHelper::success(['service' => $service]);
     }
 
     public function update(Request $request, $serviceId)

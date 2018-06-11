@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHelper;
+use App\Http\Transformers\ReviewTranformer;
 use App\Offer;
 use App\Review;
 use App\Service;
 use App\User;
 use Illuminate\Http\Request;
 use JWTAuth;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Spatie\Fractalistic\ArraySerializer;
 use Validator;
 class ReviewController extends Controller
 {
@@ -54,13 +57,19 @@ class ReviewController extends Controller
         if (!$user) {
             return ApiResponseHelper::error('User bestaat niet', 404);
         }
-        dd($user->reviews);
+        $paginator = $user->reviews()->with('fromuser')->orderBy('id', 'desc')->paginate(5);
+        $reviews = $paginator->getCollection();
+        $reviews = fractal($reviews, new ReviewTranformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->toArray();
+        return ApiResponseHelper::success(['reviews' => $reviews]);
     }
     public function servicereviews($id){
         $service = Service::find($id);
         if (!$service) {
             return ApiResponseHelper::error('User bestaat niet', 404);
         }
-        dd($service->reviews()->with('fromuser')->get()->toArray());
+        $paginator = $service->reviews()->with('fromuser')->orderBy('id', 'desc')->paginate(5);
+        $reviews = $paginator->getCollection();
+        $reviews = fractal($reviews, new ReviewTranformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->toArray();
+        return ApiResponseHelper::success(['reviews' => $reviews]);
     }
 }

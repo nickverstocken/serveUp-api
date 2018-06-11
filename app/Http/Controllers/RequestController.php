@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHelper;
+use App\Http\Transformers\RequestTransformer;
 use App\Message;
 use App\Notifications\NewOffer;
 use App\Offer;
 use App\Request as RequestModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Spatie\Fractalistic\ArraySerializer;
 use Validator;
 use JWTAuth;
 use DB;
@@ -18,16 +21,21 @@ class RequestController extends Controller
         $user = JWTAuth::parseToken()->toUser();
         $requests = $user->requests()->withCount('offers')->with(['offers' => function($q) {
             $q->with(['service' => function($query){
-                $query->select('name', 'id', 'logo', 'price_estimate', 'rate')->get();
+                $query->get();
+            },'messages' => function($querymsg){
+                $querymsg->where('read_at', null);
             }])->get();
         }])->get();
+        $requests = fractal($requests, new RequestTransformer(), new ArraySerializer());
         return ApiResponseHelper::success(['requests' => $requests]);
     }
     public function get(Request $request, $id) {
         $user = JWTAuth::parseToken()->toUser();
         $req = $user->requests()->with(['offers' => function($q) {
             $q->with(['service' => function($query){
-                $query->select('name', 'id', 'logo', 'price_estimate', 'rate')->orderBy('price_estimate')->get();
+                $query->orderBy('price_estimate')->get();
+            },'messages' => function($querymsg){
+                $querymsg->where('read_at', null);
             }])->orderBy('status')->get();
         }])->where('id', $id)->first();
         if (!$req) {
@@ -36,7 +44,7 @@ class RequestController extends Controller
         if ($req->user_id != $user->id) {
             return ApiResponseHelper::error('request hoort niet bij jou', 404);
         }
-
+        $req = fractal($req, new RequestTransformer(), new ArraySerializer());
         return ApiResponseHelper::success(['request' => $req]);
     }
     public function save(Request $request){
@@ -66,7 +74,7 @@ class RequestController extends Controller
                 $offer->service_id = $id['id'];
                 $req->offers()->save($offer);
                 $messagebody = 'Datum : ' . $req->due_date . "\n" . 'Locatie : ' . $req->city->zip . ', ' . $req->city->name . "\n" . 'Beschrijving : ' . trim($req->description);
-                $message = new Message(['message' => $messagebody, 'sender_id' => $user->id, 'receiver_id' => $offer->service->user->id, 'type' => 'request']);
+                $message = new Message(['message' => $messagebody, 'sender_id' => $user->id, 'receiver_id' => $offer->service->user->id, 'type' => 'request', 'read_at' => Carbon::now()->toDateTimeString()]);
                 $offer->messages()->save($message);
                 $offer->service->user->notify(new NewOffer($user, $offer));
             }

@@ -11,11 +11,11 @@ use App;
 use App\Service;
 use League\Fractal\ParamBag;
 use League\Fractal\TransformerAbstract;
-
+use App\User;
 class ServiceTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
-        'city'
+        'city', 'user'
     ];
     public function transform(Service $service)
     {
@@ -50,5 +50,12 @@ class ServiceTransformer extends TransformerAbstract
             'rating' => $service->reviews()->get()->average('score'),
             'number_ratings' => $service->reviews()->count('id')
         ];
+    }
+    public function includeuser(Service $service)
+    {
+        if (!$service->user) {
+            return null;
+        }
+        return $this->item($service->user, App::make(App\Transformers\UserTransformer::class));
     }
 }

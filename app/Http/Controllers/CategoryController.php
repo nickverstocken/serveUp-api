@@ -34,6 +34,14 @@ class CategoryController extends Controller
         $categories = $categories->toArray();
         return ApiResponseHelper::success(['categories' => $categories]);
     }
+    public function get(Request $request, $id){
+        $category = Category::find($id);
+        if(!$category){
+            return ApiResponseHelper::error('Cateogory not found', 404);
+        }
+        $category = fractal($category, new CategoryTranformer())->parseIncludes('subcategories')->toArray();
+        return ApiResponseHelper::success(['category' => $category]);
+    }
     public function getSubCategories(Request $request){
         $search_term = $request->input('search');
         $limit = $request->input('limit', 5);

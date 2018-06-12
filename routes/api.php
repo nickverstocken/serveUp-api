@@ -74,7 +74,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     //message
     Route::post('offer/{id}/message', 'MessageController@sendMessage');
     Route::get('offer/{id}/messages', 'MessageController@getMessages');
-
+    Route::get('offer/{id}/messages/markasread', 'MessageController@markAsRead');
+    Route::get('messages', 'MessageController@index');
     //appointment
     Route::get('appointments', 'AppointmentController@getAppointments');
     Route::get('appointment/{id}', 'AppointmentController@show');

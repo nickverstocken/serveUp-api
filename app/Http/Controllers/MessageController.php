@@ -79,6 +79,29 @@ class MessageController extends Controller
         return ApiResponseHelper::success(['offer' => $offer, 'messages' => $messages]);
     }
     public function index(Request $request){
-
+        $user = JWTAuth::parseToken()->toUser();
+        $messages = Offer::whereHas('messages', function($q) use ($user) { $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id); })
+            ->with(['messages' => function($q){
+                $q->orderBy('read_at')->orderBy('id', 'desc');
+            }])
+            ->get()->pluck('messages')->flatten()->unique('message_id');
+        return ApiResponseHelper::success(['messages' => $messages]);
     }
+
+    public function markAsRead(Request $request, $offerId){
+        $user = JWTAuth::parseToken()->toUser();
+        $offer = Offer::find($offerId);
+        if (!$offer) {
+            return ApiResponseHelper::error('Offer bestaat niet', 404);
+        }
+        $request_user = $offer->request->user_id;
+        $service_user = $offer->service->user_id;
+        if ($request_user != $user->id && $service_user != $user->id) {
+            return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
+        }
+        //$user->unreadNotifications()->update(['read_at' => now()]);
+        $offer->messages()->where('receiver_id', $user->id)->where('read_at', null)->update(['read_at' => now()]);
+        return ApiResponseHelper::success([], 'marked as read');
+    }
+
 }

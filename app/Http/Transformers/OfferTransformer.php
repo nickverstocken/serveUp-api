@@ -5,6 +5,7 @@ namespace App\Http\Transformers;
 use App\Offer;
 use League\Fractal\TransformerAbstract;
 use Spatie\Fractalistic\ArraySerializer;
+use JWTAuth;
 
 class OfferTransformer extends TransformerAbstract
 {
@@ -15,10 +16,11 @@ class OfferTransformer extends TransformerAbstract
      */
     public function transform(Offer $offer)
     {
+        $user = JWTAuth::parseToken()->toUser();
         return [
             'id' => $offer->id,
             'hired' => $offer->hired,
-            'new_messages' => $offer->messages->count(),
+            'new_messages' => $offer->messages()->where('receiver_id', $user->id)->where('read_at', null)->count(),
             'status' => $offer->status,
             'accepted' => $offer->accepted,
             'request_id' => $offer->request_id,

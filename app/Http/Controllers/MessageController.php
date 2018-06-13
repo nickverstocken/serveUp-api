@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Service;
 use Illuminate\Http\Request;
 use Validator;
 use App\Helpers\ApiResponseHelper;
@@ -9,6 +10,7 @@ use App\Message;
 use App\Events\MessageSent;
 use JWTAuth;
 use App\Offer;
+
 class MessageController extends Controller
 {
     public function sendMessage(Request $request, $id)
@@ -23,9 +25,9 @@ class MessageController extends Controller
         if ($request_user != $user->id && $service_user != $user->id) {
             return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
         }
-        if($request_user == $user->id){
+        if ($request_user == $user->id) {
             $receiver = $offer->service->user_id;
-        }else{
+        } else {
             $receiver = $offer->request->user_id;
         }
 
@@ -38,7 +40,7 @@ class MessageController extends Controller
             return ApiResponseHelper::error($validator->messages(), 422);
         }
 
-        if(isset($input['type'])){
+        if (isset($input['type'])) {
             switch ($input['type']) {
                 case 'date':
                     break;
@@ -55,12 +57,13 @@ class MessageController extends Controller
         $message = new Message(['message' => trim($input['message']), 'sender_id' => $user->id, 'receiver_id' => $receiver]);
         $offer->messages()->save($message);
 
-        $message = $message->with(['sender' => function($q){
+        $message = $message->with(['sender' => function ($q) {
             $q->select()->get();
         }, 'receiver'])->find($message->id);
         broadcast(new MessageSent($user, $message->receiver, $message))->toOthers();
         return ApiResponseHelper::success(['message' => $message]);
     }
+
     public function getMessages(Request $request, $offerId)
     {
         $user = JWTAuth::parseToken()->toUser();
@@ -78,17 +81,38 @@ class MessageController extends Controller
         }, 'receiver'])->orderBy('updated_at')->get();
         return ApiResponseHelper::success(['offer' => $offer, 'messages' => $messages]);
     }
-    public function index(Request $request){
+
+    public function index(Request $request)
+    {
         $user = JWTAuth::parseToken()->toUser();
-        $messages = Offer::whereHas('messages', function($q) use ($user) { $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id); })
-            ->with(['messages' => function($q){
-                $q->orderBy('read_at')->orderBy('id', 'desc');
-            }])
-            ->get()->pluck('messages')->flatten()->unique('message_id');
-        return ApiResponseHelper::success(['messages' => $messages]);
+        $messages = [];
+
+        $meta = Offer::whereHas('messages')->with(['messages' => function ($q) use ($user) {
+            $q->where('read_at', null)->where('receiver_id', $user->id);
+        }])->get()->pluck('messages')->flatten()->count();
+
+        if ($user->role == 'service') {
+            $messages['service_messages'] = Offer::whereHas('service', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->with(['service', 'request.user'])->limit(15)->get();
+
+            $messages['service_messages']->each(function ($offer) {
+                $offer->load('latestMessage');
+            });
+        }
+        $messages['personal_messages'] = $user->requests()->with(['offers' => function ($q) {
+            $q->with(['service', 'request.user']);
+            $q->limit(10);
+        }])->get()->pluck('offers')->flatten();
+
+        $messages['personal_messages']->each(function ($offer) {
+            $offer->load('latestMessage');
+        });
+        return ApiResponseHelper::success(['messages' => $messages, 'unread' => $meta]);
     }
 
-    public function markAsRead(Request $request, $offerId){
+    public function markAsRead(Request $request, $offerId)
+    {
         $user = JWTAuth::parseToken()->toUser();
         $offer = Offer::find($offerId);
         if (!$offer) {
@@ -99,8 +123,21 @@ class MessageController extends Controller
         if ($request_user != $user->id && $service_user != $user->id) {
             return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
         }
-        //$user->unreadNotifications()->update(['read_at' => now()]);
         $offer->messages()->where('receiver_id', $user->id)->where('read_at', null)->update(['read_at' => now()]);
+        return ApiResponseHelper::success([], 'marked as read');
+    }
+    public function markAllAsRead(Request $request)
+    {
+        $user = JWTAuth::parseToken()->toUser();
+        $offers = Offer::whereHas('messages')->with(['messages' => function ($q) use ($user) {
+            $q->where('read_at', null)->where('receiver_id', $user->id);
+        }])->get();
+
+        $offers->each(function ($offer) use ($user){
+            $offer->messages()->where('receiver_id', $user->id)->where('read_at', null)->update(['read_at' => now()]);
+        });
+
+
         return ApiResponseHelper::success([], 'marked as read');
     }
 

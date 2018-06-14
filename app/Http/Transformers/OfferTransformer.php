@@ -22,6 +22,8 @@ class OfferTransformer extends TransformerAbstract
             'hired' => $offer->hired,
             'new_messages' => $offer->messages()->where('receiver_id', $user->id)->where('read_at', null)->count(),
             'status' => $offer->status,
+            'user_reviewed' => $offer->user_reviewed,
+            'service_reviewed' => $offer->service_reviewed,
             'accepted' => $offer->accepted,
             'request_id' => $offer->request_id,
             'request' => $offer->request,

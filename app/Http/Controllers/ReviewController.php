@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHelper;
 use App\Http\Transformers\ReviewTranformer;
+use App\Notifications\NewReview;
 use App\Offer;
 use App\Review;
 use App\Service;
@@ -13,6 +14,7 @@ use JWTAuth;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Spatie\Fractalistic\ArraySerializer;
 use Validator;
+use DB;
 class ReviewController extends Controller
 {
     public function save(Request $request, $offer_id){
@@ -39,16 +41,24 @@ class ReviewController extends Controller
 
         if($offer->request->user_id == $user->id){
             $model = $offer->service;
-
+            $offer->service_reviewed = true;
+            $notifyto = $model->user;
         }
         if($offer->service->user_id == $user->id){
             $model = $offer->request->user;
+            $offer->user_reviewed = true;
+            $notifyto = $model;
         }
         $review = new Review();
         $review->comment = $input['review'];
         $review->score = $input['rating'];
         $review->user_id = $user->id;
+
+        DB::beginTransaction();
+        $offer->save();
         $model->reviews()->save($review);
+        $notifyto->notify(new NewReview($user, $offer, $review));
+        DB::commit();
 
         return ApiResponseHelper::success(['review' => $review->toArray()]);
     }

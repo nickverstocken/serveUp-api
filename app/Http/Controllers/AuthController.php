@@ -46,7 +46,7 @@ class AuthController extends Controller
             'address' => 'max:191',
             'city_id' => 'integer',
             'picture' => 'image|mimes:jpg,png,jpeg',
-            'role' => 'required|in:user,business'
+            'role' => 'required|in:user,service'
         ];
         $input = $request->all();
         $validator = Validator::make($input, $rules);

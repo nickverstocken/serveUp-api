@@ -15,6 +15,8 @@ class CreateOffersTable extends Migration
             $table->increments('id');
             $table->boolean('accepted')->default(0);
             $table->enum('status',['awaiting','accepted','declined', 'not_hired', 'hired'])->default('awaiting');
+            $table->boolean('user_reviewed')->default(false);
+            $table->boolean('service_reviewed')->default(false);
             $table->boolean('hired')->default(0);
             $table->double('price_offer', 12, 2)->nullable();
             $table->string('rate')->nullable();

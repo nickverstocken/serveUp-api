@@ -45,7 +45,7 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:6',
             'address' => 'max:191',
             'city_id' => 'integer',
-            'picture' => 'image|mimes:jpg,png,jpeg',
+            'picture' => 'nullable|image|mimes:jpg,png,jpeg',
             'role' => 'required|in:user,service'
         ];
         $input = $request->all();

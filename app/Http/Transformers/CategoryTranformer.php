@@ -23,7 +23,7 @@ class CategoryTranformer extends TransformerAbstract
             'id' => $category->id,
             'name' => trim($category->name),
             'description' => trim($category->description),
-            'picture' => Storage::disk('public')->url($category->picturePath),
+            'picture' => $category->picturePath,
             'created_at' => $category->created_at->toDateTimeString(),
             'updated_at' => $category->updated_at->toDateTimeString()
         ];

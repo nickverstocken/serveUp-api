@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponseHelper;
-use App\Http\Transformers\ReviewTranformer;
+use App\Http\Transformers\ReviewTransformer;
 use App\Notifications\NewReview;
 use App\Offer;
 use App\Review;
@@ -69,7 +69,7 @@ class ReviewController extends Controller
         }
         $paginator = $user->reviews()->with('fromuser')->orderBy('id', 'desc')->paginate(5);
         $reviews = $paginator->getCollection();
-        $reviews = fractal($reviews, new ReviewTranformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->toArray();
+        $reviews = fractal($reviews, new ReviewTransformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->toArray();
         return ApiResponseHelper::success(['reviews' => $reviews]);
     }
     public function servicereviews($id){
@@ -79,7 +79,7 @@ class ReviewController extends Controller
         }
         $paginator = $service->reviews()->with('fromuser')->orderBy('id', 'desc')->paginate(5);
         $reviews = $paginator->getCollection();
-        $reviews = fractal($reviews, new ReviewTranformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->toArray();
+        $reviews = fractal($reviews, new ReviewTransformer())->paginateWith(new IlluminatePaginatorAdapter($paginator))->toArray();
         return ApiResponseHelper::success(['reviews' => $reviews]);
     }
 }

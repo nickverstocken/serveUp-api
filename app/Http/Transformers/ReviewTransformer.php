@@ -7,7 +7,7 @@ use App\Transformers\UserTransformer;
 use League\Fractal\TransformerAbstract;
 use Spatie\Fractalistic\ArraySerializer;
 
-class ReviewTranformer extends TransformerAbstract
+class ReviewTransformer extends TransformerAbstract
 {
     /**
      * A Fractal transformer.

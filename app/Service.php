@@ -86,7 +86,17 @@ class Service extends Model
         'faq',
 		'standard_response'
 	];
+    protected static function boot()
+    {
+        parent::boot();
 
+        static::deleting(function($service) {
+            foreach ($service->offers()->get() as $offer) {
+                $offer->delete();
+            }
+            $service->reviews()->delete();
+        });
+    }
 	public function city()
 	{
 		return $this->belongsTo(\App\City::class);

@@ -45,10 +45,12 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:6',
             'address' => 'max:191',
             'city_id' => 'integer',
-            'picture' => 'nullable|image|mimes:jpg,png,jpeg',
             'role' => 'required|in:user,service'
         ];
         $input = $request->all();
+        if ($request->hasFile('picture')) {
+            $rules['picture'] = 'image|mimes:jpg,png,jpeg';
+        }
         $validator = Validator::make($input, $rules);
 
         if ($validator->fails()) {
@@ -59,7 +61,7 @@ class AuthController extends Controller
             $input['password'] = bcrypt($input['password']);
             DB::beginTransaction();
             $user = User::create($input);
-            if ($input['picture']) {
+            if ($request->hasFile('picture')) {
                 $file = $input['picture'];
                 $extension = $file->getClientOriginalExtension();
 

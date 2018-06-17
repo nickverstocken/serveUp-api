@@ -53,6 +53,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::post('service/update/{serviceId}', 'ServiceController@update');
     Route::post('service/save', 'ServiceController@save');
     Route::delete('service/{serviceId}/tag/{tagName}', 'ServiceController@removeTagFromService');
+    Route::delete('service/{id}', 'ServiceController@delete');
     Route::get('service/{id}', 'ServiceController@get');
 
     //request
@@ -63,7 +64,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     Route::delete('request/{id}/delete', 'RequestController@delete');
 
     //offer
-    Route::get('request/{reqid}/offer/{id}', 'OfferController@get');
+    Route::get('request/{reqid}/offer/{id}', ['middleware' => 'throttle:1,0', 'uses' => 'OfferController@get']);
     Route::get('offers', 'OfferController@index');
     Route::put('offer/{id}/update', 'OfferController@update');
     Route::post('offer/{id}/priceoffer', 'OfferController@sendPriceOffer');
@@ -73,9 +74,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
 
     //message
     Route::post('offer/{id}/message', 'MessageController@sendMessage');
-    Route::get('offer/{id}/messages', 'MessageController@getMessages');
+    Route::get('offer/{id}/messages', ['middleware' => 'throttle:1,0', 'uses' => 'MessageController@getMessages']);
     Route::get('offer/{id}/messages/markasread', 'MessageController@markAsRead');
-    Route::get('offer/messages/markallasread', 'MessageController@markAllAsRead');
+    Route::get('offer/messages/markallasread', ['middleware' => 'throttle:1,0', 'uses' => 'MessageController@markAllAsRead']);
     Route::get('messages', 'MessageController@index');
     //appointment
     Route::get('appointments', 'AppointmentController@getAppointments');
@@ -87,5 +88,5 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors', 'jwt.auth']], function(
     //reviews
     Route::post('offer/{id}/review', 'ReviewController@save');
     Route::get('user/{id}/reviews', 'ReviewController@userreviews');
-    Route::get('service/{id}/reviews', 'ReviewController@servicereviews');
+    Route::get('service/{id}/reviews', ['middleware' => 'throttle:1,0', 'uses' => 'ReviewController@servicereviews']);
 });

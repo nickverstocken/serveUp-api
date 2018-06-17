@@ -354,4 +354,17 @@ class ServiceController extends Controller
 
         return ApiResponseHelper::success(['offer' => $offer, 'action' => $input['action']]);
     }
+    public function delete(Request $request, $id){
+        $user = JWTAuth::parseToken()->toUser();
+        $service = $user->services()->find($id);
+        if (!$service) {
+            return ApiResponseHelper::error('Niet gevonden', 404);
+        }
+        if ($service->id != $id) {
+            return ApiResponseHelper::error('Offer hoort niet bij jou', 404);
+        }
+
+        $service->delete();
+        return ApiResponseHelper::success(['service' => $service], 'Service succesvol verwijderd');
+    }
 }

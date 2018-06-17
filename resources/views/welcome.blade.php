@@ -71,7 +71,7 @@
                    Verification success
                 </div>
                 <h2>
-                    Your email has been successfully verified. You can now <a href="127.0.1:4200/login">Login here</a>!
+                    Your email has been successfully verified. You can now <a href="http://nick.insypro.com/#/login">Login here</a>!
                 </h2>
         </div>
     </body>

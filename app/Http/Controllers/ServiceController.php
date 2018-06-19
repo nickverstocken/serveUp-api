@@ -239,15 +239,6 @@ class ServiceController extends Controller
         $city = City::where('zip', $zip)->where('name', 'like', $name . '%')->first();
         $zips = [];
         if ($city) {
-            /*            $sql = 'SELECT *, (6371* ACOS(
-                                COS(RADIANS(' . $city->lat . '))
-                                * COS( RADIANS(lat))
-                                * COS( RADIANS(' . $city->lng . ')
-                                - RADIANS(lng))
-                                + SIN( RADIANS(' . $city->lat . '))
-                                * SIN( RADIANS(lat))))
-                                AS distance FROM city HAVING distance<=' . $radius . ' AND distance > 0';
-                        $result = DB::select($sql);*/
             $allcities = City::all();
 
             foreach ($allcities as $citydb) {
